@@ -34,4 +34,24 @@ router.post("/receive", function(req, res, next) {
   });
 });
 
+router.post("/sell", function(req, res, next) {
+  const connection = getConnection();
+
+  const ticketNumber = req.body.ticketNumber;
+  const product_id = req.body.product_id;
+
+  const queryString =
+    "UPDATE products SET sold = 'true' WHERE ticketnumber = ? AND product_id = ?";
+
+  connection.query(queryString, [ticketNumber, product_id], function(
+    error,
+    results,
+    fields
+  ) {
+    if (error) throw error;
+
+    res.send({ Sold: true });
+  });
+});
+
 module.exports = router;
