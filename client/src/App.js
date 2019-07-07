@@ -10,7 +10,7 @@ import Pay from "./Pages/Pay/Pay";
 class App extends Component {
   render() {
     return (
-      <div className="App">
+      <div className="grid-container">
         <BrowserRouter>
           <Switch>
             <Route path="/" exact component={Home} />

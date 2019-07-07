@@ -1,77 +1,78 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import { Redirect } from "react-router-dom";
 
 import ReturnToHome from "../../Components/ReturnToHome";
+import DynamicInputs from "../../Components/DynamicInputs";
 
-class Receive extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      item: "",
-      received: false
-    };
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.onChange = this.onChange.bind(this);
-  }
+const Receive = () => {
+  const [items, setItems] = useState([""]);
+  const [received, setReceived] = useState(false);
 
-  handleSubmit(event) {
+  const handleSubmit = event => {
     event.preventDefault();
 
-    const pre = this.state.item.split(".");
-    const ticketNumber = pre[0];
-    const product_id = pre[1];
-    const data = {
-      ticketNumber,
-      product_id
-    };
+    const inputs = [...items];
+    for (let i = 0; i < inputs.length; i++) {
+      if (inputs[i] !== "") {
+        const pre = inputs[i].split(".");
+        const ticketNumber = pre[0];
+        const product_id = pre[1];
+        const data = {
+          ticketNumber,
+          product_id
+        };
 
-    const context = this;
+        fetch("/receive", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        })
+          .then(function(response) {
+            if (response.status >= 400) {
+              throw new Error("Bad response from server");
+            }
+            return response.json();
+          })
+          .catch(function(err) {
+            console.log(err);
+          });
+      }
+    }
+    setReceived(true);
+  };
 
-    console.log(ticketNumber);
-    console.log(product_id);
+  const keyPressHandler = event => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      setItems([...items, ""]);
+    }
+  };
 
-    fetch("/receive", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    })
-      .then(function(response) {
-        if (response.status >= 400) {
-          throw new Error("Bad response from server");
-        }
-        return response.json();
-      })
-      .then(function(response) {
-        context.setState({ received: response["Received"] });
-      })
-      .catch(function(err) {
-        console.log(err);
-      });
-  }
+  const changeHandler = event => {
+    let itemsCopy = [...items];
+    itemsCopy[event.target.dataset.id] = event.target.value;
+    setItems(itemsCopy);
+    console.log(items);
+  };
 
-  onChange(e) {
-    this.setState({ [e.target.name]: e.target.value });
-  }
-
-  render() {
-    return (
-      <div>
+  return (
+    <div className="grid-container">
+      <div className="Middle">
         <ReturnToHome />
         <h1>Receive Items</h1>
-        <form onSubmit={this.handleSubmit} method="POST">
+        <form onSubmit={handleSubmit} method="POST">
           <label>Scan Item</label>
-          <input
-            onChange={this.onChange}
-            value={this.state.item}
-            placeholder="Scan Barcode"
-            name="item"
+          <DynamicInputs
+            items={items}
+            onKeyPress={keyPressHandler}
+            onChange={changeHandler}
           />
-          <button>Enter item</button>
+          <button>Enter Items</button>
         </form>
-        {this.state.received ? <Redirect to="/" /> : ""}
+        {received ? <Redirect to="/" /> : ""}
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default Receive;
