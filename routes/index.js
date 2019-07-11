@@ -20,9 +20,11 @@ router.post("/receive", function(req, res, next) {
 
   const ticketNumber = req.body.ticketNumber;
   const product_id = req.body.product_id;
+  console.log(ticketNumber);
+  console.log(product_id);
 
   const queryString =
-    "UPDATE products SET available = 'yes' WHERE ticketnumber = ? AND product_id = ?";
+    "UPDATE products SET status = 1 WHERE ticketnumber = ? AND product_id = ?";
 
   connection.query(queryString, [ticketNumber, product_id], function(
     error,
@@ -40,11 +42,18 @@ router.post("/sell", function(req, res, next) {
 
   const ticketNumber = req.body.ticketNumber;
   const product_id = req.body.product_id;
+  const dateTime = new Date()
+    .toISOString()
+    .slice(0, 19)
+    .replace("T", " ");
+  console.log(ticketNumber);
+  console.log(product_id);
+  console.log(dateTime);
 
   const queryString =
-    "UPDATE products SET sold = 'true' WHERE ticketnumber = ? AND product_id = ? AND available = 'yes'";
+    "UPDATE products SET status = 2, timestamp = ? WHERE ticketnumber = ? AND product_id = ?";
 
-  connection.query(queryString, [ticketNumber, product_id], function(
+  connection.query(queryString, [dateTime, ticketNumber, product_id], function(
     error,
     results,
     fields
@@ -63,7 +72,7 @@ router.post("/pay", function(req, res, next) {
   const ticketNumber = req.body.ticketNumber;
 
   const queryString =
-    "SELECT * FROM products WHERE ticketnumber = ? AND SOLD = 'false' AND available = 'yes'";
+    "SELECT * FROM products WHERE ticketnumber = ? AND status = 1";
 
   connection.query(queryString, [ticketNumber], function(
     error,
@@ -74,7 +83,7 @@ router.post("/pay", function(req, res, next) {
     unSold = results;
 
     const soldQueryString =
-      "SELECT * FROM products WHERE ticketnumber = ? AND sold = 'true'";
+      "SELECT * FROM products WHERE ticketnumber = ? AND status = 2";
     connection.query(soldQueryString, [ticketNumber], function(
       error,
       results,

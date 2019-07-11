@@ -1,3 +1,5 @@
+@import "~antd/dist/antd.css";
+
 body {
   margin: 0;
   padding: 0;
@@ -10,12 +12,34 @@ body {
 
 .grid-container {
   display: grid;
-  grid-template-areas: "Middle";
-  height: 100vh;
+  grid-template-columns: 0.5fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-areas: "Navigation Window Window Window" "Navigation Window Window Window" "Navigation Window Window Window";
   width: 100vw;
+  height: 100vh;
 }
 
-.Middle {
+.Navigation {
+  grid-area: Navigation;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+}
+
+.Window {
+  grid-area: Window;
+  background-color: grey;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+/*.Middle {
   grid-area: Middle;
   background-color: grey;
   text-align: center;
@@ -23,4 +47,4 @@ body {
   justify-content: center;
   align-content: center;
   flex-direction: column;
-}
+}*/

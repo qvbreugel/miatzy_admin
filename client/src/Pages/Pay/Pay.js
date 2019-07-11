@@ -56,30 +56,28 @@ class Pay extends Component {
 
   render() {
     return (
-      <div className="grid-container">
-        <div className="Middle">
-          <ReturnToHome />
-          <h1>Pay Supplier</h1>
-          <form onSubmit={this.handleSubmit} method="POST">
-            <label>Enter Ticket Number</label>
-            <input
-              onChange={this.onChange}
-              value={this.state.ticketNumber}
-              placeholder="Scan Barcode"
-              name="ticketNumber"
-            />
-            <button>Enter item</button>
-          </form>
-          <h2>Results:</h2>
-          {this.state.unsold.map(product => (
-            <div key={product.id}>
-              id: {product.product_id} name: {product.name}
-            </div>
-          ))}
-          <div>
-            <h2>Payment Due:</h2>
-            <h3>{this.state.amountDue}</h3>
+      <div className="Window">
+        <ReturnToHome />
+        <h1>Pay Supplier</h1>
+        <form onSubmit={this.handleSubmit} method="POST">
+          <label>Enter Ticket Number</label>
+          <input
+            onChange={this.onChange}
+            value={this.state.ticketNumber}
+            placeholder="Scan Barcode"
+            name="ticketNumber"
+          />
+          <button>Enter item</button>
+        </form>
+        <h2>Results:</h2>
+        {this.state.unsold.map(product => (
+          <div key={product.id}>
+            id: {product.product_id} name: {product.name}
           </div>
+        ))}
+        <div>
+          <h2>Payment Due:</h2>
+          <h3>{this.state.amountDue}</h3>
         </div>
       </div>
     );

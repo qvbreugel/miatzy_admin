@@ -55,20 +55,18 @@ const Sell = () => {
   };
 
   return (
-    <div className="grid-container">
-      <div className="Middle">
-        <ReturnToHome />
-        <h1>Sell Items</h1>
-        <form onSubmit={handleSubmit} method="POST">
-          <DynamicInputs
-            items={items}
-            onKeyPress={keyPressHandler}
-            onChange={changeHandler}
-          />
-          <button>Sell item</button>
-        </form>
-        {sold ? <Redirect to="/" /> : ""}
-      </div>
+    <div className="Window">
+      <ReturnToHome />
+      <h1>Sell Items</h1>
+      <form onSubmit={handleSubmit} method="POST">
+        <DynamicInputs
+          items={items}
+          onKeyPress={keyPressHandler}
+          onChange={changeHandler}
+        />
+        <button>Sell item</button>
+      </form>
+      {sold ? <Redirect to="/" /> : ""}
     </div>
   );
 };

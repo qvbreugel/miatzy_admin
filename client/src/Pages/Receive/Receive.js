@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Redirect } from "react-router-dom";
 
-import ReturnToHome from "../../Components/ReturnToHome";
+//Components
 import DynamicInputs from "../../Components/DynamicInputs";
 
 const Receive = () => {
@@ -56,21 +56,18 @@ const Receive = () => {
   };
 
   return (
-    <div className="grid-container">
-      <div className="Middle">
-        <ReturnToHome />
-        <h1>Receive Items</h1>
-        <form onSubmit={handleSubmit} method="POST">
-          <label>Scan Item</label>
-          <DynamicInputs
-            items={items}
-            onKeyPress={keyPressHandler}
-            onChange={changeHandler}
-          />
-          <button>Enter Items</button>
-        </form>
-        {received ? <Redirect to="/" /> : ""}
-      </div>
+    <div className="Window">
+      <h1>Receive Items</h1>
+      <form onSubmit={handleSubmit} method="POST">
+        <label>Scan Item</label>
+        <DynamicInputs
+          items={items}
+          onKeyPress={keyPressHandler}
+          onChange={changeHandler}
+        />
+        <button>Enter Items</button>
+      </form>
+      {received ? <Redirect to="/" /> : ""}
     </div>
   );
 };
