@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { Redirect } from "react-router-dom";
 
 //Components
 import DynamicInputs from "../../Components/DynamicInputs";
 
+//Ant Design
+import { Button, Typography } from "antd";
+const { Title } = Typography;
+
 const Receive = () => {
-  const [items, setItems] = useState([""]);
+  const [items, setItems] = useState([{ barcode: "", status: 1 }]);
   const [received, setReceived] = useState(false);
 
   const handleSubmit = event => {
@@ -14,12 +17,14 @@ const Receive = () => {
     const inputs = [...items];
     for (let i = 0; i < inputs.length; i++) {
       if (inputs[i] !== "") {
-        const pre = inputs[i].split(".");
+        const pre = inputs[i]["barcode"].split(".");
         const ticketNumber = pre[0];
         const product_id = pre[1];
+        const status = inputs[i]["status"];
         const data = {
           ticketNumber,
-          product_id
+          product_id,
+          status
         };
 
         fetch("/receive", {
@@ -44,30 +49,43 @@ const Receive = () => {
   const keyPressHandler = event => {
     if (event.key === "Enter") {
       event.preventDefault();
-      setItems([...items, ""]);
+      setItems([...items, { barcode: "", status: 99 }]);
     }
   };
 
-  const changeHandler = event => {
+  const inputChangeHandler = event => {
     let itemsCopy = [...items];
-    itemsCopy[event.target.dataset.id] = event.target.value;
+    itemsCopy[event.target.dataset.id]["barcode"] = event.target.value;
     setItems(itemsCopy);
-    console.log(items);
   };
+
+  const selectChangeHanlder = (value, event) => {
+    let itemsCopy = [...items];
+    itemsCopy[event.props.id]["status"] = value;
+    setItems(itemsCopy);
+  };
+
+  let producten = "Product";
+
+  if (items.length > 1) {
+    producten = "Producten  ";
+  }
 
   return (
     <div className="Window">
-      <h1>Receive Items</h1>
+      <Title className="window-title">Producten Ontvangen</Title>
       <form onSubmit={handleSubmit} method="POST">
-        <label>Scan Item</label>
         <DynamicInputs
           items={items}
           onKeyPress={keyPressHandler}
-          onChange={changeHandler}
+          onInputChange={inputChangeHandler}
+          onSelectChange={selectChangeHanlder}
         />
-        <button>Enter Items</button>
+        <Button className="window-button" type="primary" onClick={handleSubmit}>
+          {producten} Ontvangen
+        </Button>
       </form>
-      {received ? <Redirect to="/" /> : ""}
+      {received ? "Received" : ""}
     </div>
   );
 };

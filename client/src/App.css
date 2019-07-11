@@ -29,14 +29,22 @@ body {
 
 .Window {
   grid-area: Window;
-  background-color: grey;
   text-align: center;
   display: flex;
-  justify-content: center;
-  align-content: center;
   flex-direction: column;
   height: 100%;
   width: 100%;
+  align-content: flex-start;
+  padding-top: 5vh;
+}
+
+.window-title {
+  margin-bottom: 5vh !important;
+}
+
+.window-button {
+  margin-top: 5vh !important;
+  margin-bottom: 5vh !important;
 }
 
 /*.Middle {

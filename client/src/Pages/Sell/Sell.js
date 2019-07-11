@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { Redirect } from "react-router-dom";
 
-import ReturnToHome from "../../Components/ReturnToHome";
 import DynamicInputs from "../../Components/DynamicInputs";
+
+//Ant Design
+import { Button, Typography } from "antd";
+const { Title } = Typography;
 
 const Sell = () => {
   const [items, setItems] = useState([""]);
@@ -54,17 +57,24 @@ const Sell = () => {
     console.log(items);
   };
 
+  let producten = "Product";
+
+  if (items.length > 1) {
+    producten = "Producten  ";
+  }
+
   return (
     <div className="Window">
-      <ReturnToHome />
-      <h1>Sell Items</h1>
+      <Title className="window-title">Producten Verkopen</Title>
       <form onSubmit={handleSubmit} method="POST">
         <DynamicInputs
           items={items}
           onKeyPress={keyPressHandler}
           onChange={changeHandler}
         />
-        <button>Sell item</button>
+        <Button className="window-button" type="primary">
+          {producten} Verkopen
+        </Button>
       </form>
       {sold ? <Redirect to="/" /> : ""}
     </div>

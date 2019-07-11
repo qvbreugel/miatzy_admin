@@ -6,7 +6,8 @@ const pool = mysql.createPool({
   connectionLimit: 10,
   host: "localhost",
   user: "root",
-  port: 3306,
+  password: "root",
+  port: 8889,
   database: "miatzy"
 });
 
@@ -18,15 +19,17 @@ function getConnection() {
 router.post("/receive", function(req, res, next) {
   const connection = getConnection();
 
+  const status = req.body.status;
   const ticketNumber = req.body.ticketNumber;
   const product_id = req.body.product_id;
+
   console.log(ticketNumber);
   console.log(product_id);
 
   const queryString =
-    "UPDATE products SET status = 1 WHERE ticketnumber = ? AND product_id = ?";
+    "UPDATE products SET status = ? WHERE ticketnumber = ? AND product_id = ?";
 
-  connection.query(queryString, [ticketNumber, product_id], function(
+  connection.query(queryString, [status, ticketNumber, product_id], function(
     error,
     results,
     fields

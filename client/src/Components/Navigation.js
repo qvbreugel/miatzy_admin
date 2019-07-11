@@ -11,10 +11,12 @@ const Navigation = props => {
         defaultSelectedKeys={["ac_rec"]}
         mode="inline"
       >
+        <Menu.Divider />
         <Menu.ItemGroup key="pr" title="Producten">
           <Menu.Item key="pr_all">Alle Producten</Menu.Item>
           <Menu.Item key="pr_rec">Ontvangen Producten</Menu.Item>
-          <Menu.Item key="pr_sld">Verkochte Procuten</Menu.Item>
+          <Menu.Item key="pr_sld">Verkochte Produtcen</Menu.Item>
+          <Menu.Item key="pr_scn">Scan Product</Menu.Item>
         </Menu.ItemGroup>
         <Menu.ItemGroup key="ac" title="Acties">
           <Menu.Item key="ac_rec">Ontvangen</Menu.Item>
@@ -24,6 +26,7 @@ const Navigation = props => {
         <Menu.ItemGroup key="in" title="Inzichten">
           <Menu.Item key="in_sls">Opbrengsten</Menu.Item>
         </Menu.ItemGroup>
+        <Menu.Divider />
       </Menu>
     </div>
   );
