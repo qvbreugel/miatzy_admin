@@ -6,8 +6,7 @@ const pool = mysql.createPool({
   connectionLimit: 10,
   host: "localhost",
   user: "root",
-  password: "root",
-  port: 8889,
+  port: 3306,
   database: "miatzy"
 });
 
@@ -54,7 +53,7 @@ router.post("/sell", function(req, res, next) {
   console.log(dateTime);
 
   const queryString =
-    "UPDATE products SET status = 2, timestamp = ? WHERE ticketnumber = ? AND product_id = ?";
+    "UPDATE products SET status = status+1, timestamp = ? WHERE ticketnumber = ? AND product_id = ?";
 
   connection.query(queryString, [dateTime, ticketNumber, product_id], function(
     error,
@@ -75,7 +74,7 @@ router.post("/pay", function(req, res, next) {
   const ticketNumber = req.body.ticketNumber;
 
   const queryString =
-    "SELECT * FROM products WHERE ticketnumber = ? AND status = 1";
+    "SELECT * FROM products WHERE ticketnumber = ? AND status = 1 OR 11 OR 21";
 
   connection.query(queryString, [ticketNumber], function(
     error,
@@ -86,7 +85,7 @@ router.post("/pay", function(req, res, next) {
     unSold = results;
 
     const soldQueryString =
-      "SELECT * FROM products WHERE ticketnumber = ? AND status = 2";
+      "SELECT * FROM products WHERE ticketnumber = ? AND status = 2 OR 12 OR 22";
     connection.query(soldQueryString, [ticketNumber], function(
       error,
       results,

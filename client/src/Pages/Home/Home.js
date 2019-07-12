@@ -3,6 +3,7 @@ import Navigation from "../../Components/Navigation";
 import Receive from "../Receive/Receive";
 import Sell from "../Sell/Sell";
 import Pay from "../Pay/Pay";
+import Scan from "../Scan/Scan";
 
 //Pages
 
@@ -24,6 +25,9 @@ const Home = () => {
       break;
     case "ac_pay":
       activeWindow = <Pay />;
+      break;
+    case "pr_scn":
+      activeWindow = <Scan />;
       break;
     default:
       activeWindow = <Receive />;

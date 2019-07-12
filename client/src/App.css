@@ -14,7 +14,7 @@ body {
   display: grid;
   grid-template-columns: 0.5fr 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
-  grid-template-areas: "Navigation Window Window Window" "Navigation Window Window Window" "Navigation Window Window Window";
+  grid-template-areas: "Navigation Window Window Window" ". Window Window Window" ". Window Window Window";
   width: 100vw;
   height: 100vh;
 }
@@ -45,6 +45,7 @@ body {
 .window-button {
   margin-top: 5vh !important;
   margin-bottom: 5vh !important;
+  width: 20%;
 }
 
 /*.Middle {

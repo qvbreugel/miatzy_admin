@@ -9,6 +9,27 @@ const { Option } = Select;
 const DynamicInputs = props => {
   return props.items.map((item, index) => {
     let itemId = `item-${index}`;
+
+    let receiveOptions = (
+      <Select
+        defaultValue="01"
+        onChange={props.onSelectChange}
+        style={{ width: "15%", textAlign: "center" }}
+      >
+        <Option value="01" id={index}>
+          Geen bijzonderheden
+        </Option>
+        <Option value="11" id={index}>
+          Bootleg
+        </Option>
+        <Option value="21" id={index}>
+          Donatie
+        </Option>
+        <Option value="03" id={index}>
+          Ongeschikt
+        </Option>
+      </Select>
+    );
     return (
       <div key={index}>
         <InputGroup compact>
@@ -19,29 +40,14 @@ const DynamicInputs = props => {
             name={itemId}
             data-id={index}
             id={itemId}
-            value={props.items[index]["barcode"]}
+            value={
+              props.receive ? props.items[index]["barcode"] : props.items[index]
+            }
             onChange={props.onInputChange}
             onKeyPress={props.onKeyPress}
             autoFocus
           />
-          <Select
-            defaultValue="01"
-            onChange={props.onSelectChange}
-            style={{ width: "15%", textAlign: "center" }}
-          >
-            <Option value="01" id={index}>
-              Geen bijzonderheden
-            </Option>
-            <Option value="11" id={index}>
-              Bootleg
-            </Option>
-            <Option value="21" id={index}>
-              Donatie
-            </Option>
-            <Option value="03" id={index}>
-              Ongeschikt
-            </Option>
-          </Select>
+          {props.receive ? receiveOptions : ""}
         </InputGroup>
       </div>
     );

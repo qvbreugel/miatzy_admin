@@ -11,7 +11,6 @@ const Navigation = props => {
         defaultSelectedKeys={["ac_rec"]}
         mode="inline"
       >
-        <Menu.Divider />
         <Menu.ItemGroup key="pr" title="Producten">
           <Menu.Item key="pr_all">Alle Producten</Menu.Item>
           <Menu.Item key="pr_rec">Ontvangen Producten</Menu.Item>

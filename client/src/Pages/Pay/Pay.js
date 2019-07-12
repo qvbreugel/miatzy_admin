@@ -1,29 +1,48 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 
-import ReturnToHome from "../../Components/ReturnToHome";
+//Ant Design
+import { Button, Typography, Modal } from "antd";
+import StaticInput from "./../../Components/StaticInput";
+const { Title } = Typography;
 
-class Pay extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      ticketNumber: "",
-      unsold: [],
-      amountDue: 0
-    };
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.onChange = this.onChange.bind(this);
-  }
+const Pay = () => {
+  const [ticketNumber, setTicketNumber] = useState("");
+  const [unsold, setUnsold] = useState([]);
+  const [amountDue, setAmountDue] = useState(0);
 
-  handleSubmit(event) {
+  const showModal = () => {
+    Modal.info({
+      title: "Uitbetalen",
+      centered: true,
+      content: (
+        <div>
+          {console.log(unsold)}
+          {unsold.map(product => (
+            <div key={product.id}>
+              <h2>Results:</h2>
+              id: {product.product_id} name: {product.name}
+            </div>
+          ))}
+          <div>
+            <h2>Payment Due:</h2>
+            <h3>{amountDue}</h3>
+          </div>
+        </div>
+      ),
+      onOk() {}
+    });
+  };
+
+  const handleSubmit = event => {
     event.preventDefault();
+    console.log(Date.now());
 
-    const ticketNumber = this.state.ticketNumber;
+    const currentTicketNumber = ticketNumber;
 
     const data = {
-      ticketNumber
+      currentTicketNumber
     };
 
-    const context = this;
     fetch("/pay", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -36,52 +55,39 @@ class Pay extends Component {
         return response.json();
       })
       .then(function(response) {
-        context.setState({ unsold: response["unSold"] });
+        setUnsold(response["unSold"]);
         const sold = response["Sold"];
         let subtotal = 0;
         for (let i = 0; i < sold.length; i++) {
           subtotal += sold[i]["price"];
         }
         const total = subtotal * 0.9;
-        context.setState({ amountDue: total });
+        setAmountDue(total);
       })
       .catch(function(err) {
         console.log(err);
       });
-  }
+  };
 
-  onChange(e) {
-    this.setState({ [e.target.name]: e.target.value });
-  }
+  const onChange = event => {
+    setTicketNumber(event.target.value);
+  };
 
-  render() {
-    return (
-      <div className="Window">
-        <ReturnToHome />
-        <h1>Pay Supplier</h1>
-        <form onSubmit={this.handleSubmit} method="POST">
-          <label>Enter Ticket Number</label>
-          <input
-            onChange={this.onChange}
-            value={this.state.ticketNumber}
-            placeholder="Scan Barcode"
-            name="ticketNumber"
-          />
-          <button>Enter item</button>
-        </form>
-        <h2>Results:</h2>
-        {this.state.unsold.map(product => (
-          <div key={product.id}>
-            id: {product.product_id} name: {product.name}
-          </div>
-        ))}
-        <div>
-          <h2>Payment Due:</h2>
-          <h3>{this.state.amountDue}</h3>
-        </div>
-      </div>
-    );
-  }
-}
+  return (
+    <div className="Window">
+      <Title className="window-title">Uitbetalen</Title>
+      <form onSubmit={handleSubmit} method="POST">
+        <StaticInput
+          onChange={onChange}
+          value={ticketNumber}
+          name="ticketNumber"
+        />
+        <Button className="window-button" type="primary" onClick={handleSubmit}>
+          Uitbetalen
+        </Button>
+      </form>
+    </div>
+  );
+};
 
 export default Pay;
