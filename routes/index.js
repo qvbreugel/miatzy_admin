@@ -109,4 +109,23 @@ router.post("/pay", function(req, res, next) {
   });
 });
 
+router.post("/scan_all", function(req, res, next) {
+  const connection = getConnection();
+
+  const ticketNumber = req.body.ticketNumber;
+  const product_id = req.body.product_id;
+
+  const queryString =
+    "SELECT * FROM products WHERE ticketnumber = ? AND product_id = ?";
+
+  connection.query(queryString, [ticketNumber, product_id], function(
+    error,
+    results,
+    fields
+  ) {
+    if (error) throw error;
+    res.send(results[0]);
+  });
+});
+
 module.exports = router;
