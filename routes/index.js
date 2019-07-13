@@ -45,10 +45,6 @@ router.post("/sell", function(req, res, next) {
   const ticketNumber = req.body.ticketNumber;
   const product_id = req.body.product_id;
   const index = req.body.index;
-  const dateTime = new Date()
-    .toISOString()
-    .slice(0, 19)
-    .replace("T", " ");
 
   const checkQueryString =
     "SELECT status FROM products WHERE ticketnumber = ? AND product_id = ?";
@@ -84,27 +80,27 @@ router.post("/sell", function(req, res, next) {
       });
     } else {
       const queryString =
-        "UPDATE products SET status = status+1, timestamp = ? WHERE ticketnumber = ? AND product_id = ?";
+        "UPDATE products SET status = status+1, date = CURRENT_DATE(), time = CURRENT_TIME() WHERE ticketnumber = ? AND product_id = ?";
 
-      connection.query(
-        queryString,
-        [dateTime, ticketNumber, product_id],
-        function(error, results, fields) {
-          if (error) throw error;
-          if (results["affectedRows"] === 0) {
-            res.send({
-              Sold: false,
-              error: {
-                title: "Product niet gevonden",
-                message: `Product met barcode ${ticketNumber}.${product_id} niet gevonden. Controleer de barcode.`
-              },
-              index: index
-            });
-          } else {
-            res.send({ Sold: true });
-          }
+      connection.query(queryString, [ticketNumber, product_id], function(
+        error,
+        results,
+        fields
+      ) {
+        if (error) throw error;
+        if (results["affectedRows"] === 0) {
+          res.send({
+            Sold: false,
+            error: {
+              title: "Product niet gevonden",
+              message: `Product met barcode ${ticketNumber}.${product_id} niet gevonden. Controleer de barcode.`
+            },
+            index: index
+          });
+        } else {
+          res.send({ Sold: true });
         }
-      );
+      });
     }
   });
 });

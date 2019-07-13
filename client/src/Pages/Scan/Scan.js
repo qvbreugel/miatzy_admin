@@ -116,6 +116,12 @@ const Scan = () => {
         <Descriptions.Item label="Categorie">
           {scannedProduct["category"]}
         </Descriptions.Item>
+        <Descriptions.Item label="Verkoopdatum">
+          {scannedProduct["date"]}
+        </Descriptions.Item>
+        <Descriptions.Item label="Verkooptijd">
+          {scannedProduct["time"]}
+        </Descriptions.Item>
       </Descriptions>
     );
   }
