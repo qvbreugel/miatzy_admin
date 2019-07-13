@@ -44,13 +44,11 @@ router.post("/sell", function(req, res, next) {
 
   const ticketNumber = req.body.ticketNumber;
   const product_id = req.body.product_id;
+  const index = req.body.index;
   const dateTime = new Date()
     .toISOString()
     .slice(0, 19)
     .replace("T", " ");
-  console.log(ticketNumber);
-  console.log(product_id);
-  console.log(dateTime);
 
   const queryString =
     "UPDATE products SET status = status+1, timestamp = ? WHERE ticketnumber = ? AND product_id = ?";
@@ -61,8 +59,18 @@ router.post("/sell", function(req, res, next) {
     fields
   ) {
     if (error) throw error;
-
-    res.send({ Sold: true });
+    if (results["affectedRows"] === 0) {
+      res.send({
+        Sold: false,
+        error: {
+          title: "Product niet gevonden",
+          message: `Product met barcode ${ticketNumber}.${product_id} niet gevonden. Controleer de barcode handmatig.`
+        },
+        index: index
+      });
+    } else {
+      res.send({ Sold: true });
+    }
   });
 });
 
