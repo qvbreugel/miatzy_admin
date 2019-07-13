@@ -50,26 +50,61 @@ router.post("/sell", function(req, res, next) {
     .slice(0, 19)
     .replace("T", " ");
 
-  const queryString =
-    "UPDATE products SET status = status+1, timestamp = ? WHERE ticketnumber = ? AND product_id = ?";
+  const checkQueryString =
+    "SELECT status FROM products WHERE ticketnumber = ? AND product_id = ?";
 
-  connection.query(queryString, [dateTime, ticketNumber, product_id], function(
+  connection.query(checkQueryString, [ticketNumber, product_id], function(
     error,
     results,
     fields
   ) {
     if (error) throw error;
-    if (results["affectedRows"] === 0) {
+    console.log(results[0]["status"]);
+    if (
+      results[0]["status"] === 2 ||
+      results[0]["status"] === 12 ||
+      results[0]["status"] === 22
+    ) {
       res.send({
         Sold: false,
         error: {
-          title: "Product niet gevonden",
-          message: `Product met barcode ${ticketNumber}.${product_id} niet gevonden. Controleer de barcode handmatig.`
+          title: "Product al verkocht",
+          message: `Product met barcode ${ticketNumber}.${product_id} is al verkocht. Controleer de barcode`
+        },
+        index: index
+      });
+    } else if (results[0]["status"] === 0) {
+      res.send({
+        Sold: false,
+        error: {
+          title: "Product nog niet ontvangen",
+          message: `Product met barcode ${ticketNumber}.${product_id} is nog niet ontvangen. Scan het product eerst in het Ontvangen scherm.`
         },
         index: index
       });
     } else {
-      res.send({ Sold: true });
+      const queryString =
+        "UPDATE products SET status = status+1, timestamp = ? WHERE ticketnumber = ? AND product_id = ?";
+
+      connection.query(
+        queryString,
+        [dateTime, ticketNumber, product_id],
+        function(error, results, fields) {
+          if (error) throw error;
+          if (results["affectedRows"] === 0) {
+            res.send({
+              Sold: false,
+              error: {
+                title: "Product niet gevonden",
+                message: `Product met barcode ${ticketNumber}.${product_id} niet gevonden. Controleer de barcode.`
+              },
+              index: index
+            });
+          } else {
+            res.send({ Sold: true });
+          }
+        }
+      );
     }
   });
 });
