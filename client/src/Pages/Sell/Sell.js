@@ -14,6 +14,8 @@ const Sell = () => {
   const [sold, setSold] = useState(false);
   const [errors, setErrors] = useState([]);
 
+  let noDuplicateEntries = true;
+
   useEffect(() => {
     setItems([""]);
   }, [sold]);
@@ -22,64 +24,85 @@ const Sell = () => {
     event.preventDefault();
     setFetching(true);
 
-    const inputs = [...items];
+    for (let i = items.length - 2; i >= 0; i--) {
+      if (items[items.length - 1] === items[i]) {
+        setErrors([
+          ...errors,
+          {
+            title: "Product al gescand",
+            message: `Product met barcode ${
+              items[items.length - 1]
+            } is al gescand. Scan een ander product of haal de invoer weg.`
+          }
+        ]);
+        noDuplicateEntries = false;
+        setFetching(false);
+      }
+    }
 
-    let counter = 0;
-    let errorCounter = 0;
-    let QueryErrors = [];
+    if (noDuplicateEntries) {
+      setErrors([]);
+      const inputs = [...items];
 
-    for (let i = 0; i < inputs.length; i++) {
-      if (inputs[i] !== "") {
-        const pre = inputs[i].split(".");
-        const ticketNumber = pre[0];
-        const product_id = pre[1];
-        const index = i;
-        const data = {
-          ticketNumber,
-          product_id,
-          index
-        };
+      let counter = 0;
+      let errorCounter = 0;
+      let QueryErrors = [];
 
-        fetch("/sell", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        })
-          .then(function(response) {
-            if (response.status >= 400) {
-              throw new Error("Bad response from server");
-            }
+      for (let i = 0; i < inputs.length; i++) {
+        if (inputs[i] !== "") {
+          const pre = inputs[i].split(".");
+          const ticketNumber = pre[0];
+          const product_id = pre[1];
+          const index = i;
+          const data = {
+            ticketNumber,
+            product_id,
+            index
+          };
 
-            return response.json();
+          fetch("/sell", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
           })
-          .then(function(data) {
-            if (data["Sold"]) {
-              counter++;
-            } else if (!data["Sold"]) {
-              const errorTitle = data["error"]["title"];
-              const errorMessage = data["error"]["message"];
-              QueryErrors = [...QueryErrors, { title: "", message: "" }];
-              QueryErrors[errorCounter] = {
-                title: errorTitle,
-                message: errorMessage
-              };
-              errorCounter++;
-            }
-            if (counter === inputs.length) {
-              console.log(errors.length);
-              if (errors.length > 0) {
-                setErrors([]);
+            .then(function(response) {
+              if (response.status >= 400) {
+                throw new Error("Bad response from server");
               }
-              setFetching(false);
-              setSold(true);
-            } else if (counter + errorCounter === inputs.length) {
-              setErrors(QueryErrors);
-              setFetching(false);
-            }
-          })
-          .catch(function(err) {
-            console.log(err);
-          });
+
+              return response.json();
+            })
+            .then(function(data) {
+              if (data["Sold"]) {
+                counter++;
+              } else if (!data["Sold"]) {
+                const errorTitle = data["error"]["title"];
+                const errorMessage = data["error"]["message"];
+                QueryErrors = [...QueryErrors, { title: "", message: "" }];
+                QueryErrors[errorCounter] = {
+                  title: errorTitle,
+                  message: errorMessage
+                };
+                errorCounter++;
+              }
+              if (counter === inputs.length) {
+                console.log(errors.length);
+                if (errors.length > 0) {
+                  setErrors([]);
+                }
+                setFetching(false);
+                setSold(true);
+              } else if (counter + errorCounter === inputs.length) {
+                setErrors(QueryErrors);
+                setFetching(false);
+              }
+            })
+            .catch(function(err) {
+              console.log(err);
+            });
+        } else {
+          counter++;
+        }
       }
     }
   };
@@ -87,6 +110,21 @@ const Sell = () => {
   const keyPressHandler = event => {
     if (event.key === "Enter") {
       event.preventDefault();
+      setErrors([]);
+      for (let i = items.length - 2; i >= 0; i--) {
+        if (items[items.length - 1] === items[i]) {
+          setErrors([
+            ...errors,
+            {
+              title: "Product al gescand",
+              message: `Product met barcode ${
+                items[items.length - 1]
+              } is al gescand. Scan een ander product of haal de invoer weg.`
+            }
+          ]);
+          noDuplicateEntries = false;
+        }
+      }
       setItems([...items, ""]);
     }
   };

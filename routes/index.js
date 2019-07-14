@@ -6,7 +6,8 @@ const pool = mysql.createPool({
   connectionLimit: 10,
   host: "localhost",
   user: "root",
-  port: 3306,
+  password: "root",
+  port: 8889,
   database: "miatzy"
 });
 
@@ -47,7 +48,7 @@ router.post("/sell", function(req, res, next) {
   const index = req.body.index;
 
   const checkQueryString =
-    "SELECT status FROM products WHERE ticketnumber = ? AND product_id = ?";
+    "SELECT EXISTS(SELECT status FROM products WHERE ticketnumber = ? AND product_id = ?)";
 
   connection.query(checkQueryString, [ticketNumber, product_id], function(
     error,
@@ -75,6 +76,15 @@ router.post("/sell", function(req, res, next) {
         error: {
           title: "Product nog niet ontvangen",
           message: `Product met barcode ${ticketNumber}.${product_id} is nog niet ontvangen. Scan het product eerst in het Ontvangen scherm.`
+        },
+        index: index
+      });
+    } else if (results[0]["status"] === 3) {
+      res.send({
+        Sold: false,
+        error: {
+          title: "Product niet geschikt",
+          message: `Product met barcode ${ticketNumber}.${product_id} is niet geschikt voor de verkoop. Leg het product apart of scan het opnieuw in.`
         },
         index: index
       });
