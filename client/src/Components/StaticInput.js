@@ -10,6 +10,7 @@ const StaticInput = props => {
         type="text"
         value={props.value}
         onChange={props.onChange}
+        onKeyPress={props.onKeyPress}
         autoFocus
       />
     </div>

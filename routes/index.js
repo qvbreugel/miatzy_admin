@@ -23,20 +23,61 @@ router.post("/receive", function(req, res, next) {
   const ticketNumber = req.body.ticketNumber;
   const product_id = req.body.product_id;
 
-  console.log(ticketNumber);
-  console.log(product_id);
+  const checkQueryString =
+    "SELECT status FROM products WHERE ticketnumber = ? AND product_id = ?";
 
-  const queryString =
-    "UPDATE products SET status = ? WHERE ticketnumber = ? AND product_id = ?";
-
-  connection.query(queryString, [status, ticketNumber, product_id], function(
+  connection.query(checkQueryString, [ticketNumber, product_id], function(
     error,
     results,
     fields
   ) {
     if (error) throw error;
+    if (results.length === 0) {
+      res.send({
+        Received: false,
+        error: {
+          title: "Product niet gevonden",
+          message: `Product met barcode ${ticketNumber}.${product_id} niet gevonden. Controleer de barcode.`
+        }
+      });
+    } else if (
+      results[0]["status"] === 1 ||
+      results[0]["status"] === 11 ||
+      results[0]["status"] === 21
+    ) {
+      res.send({
+        Sold: false,
+        error: {
+          title: "Product al ontvangen",
+          message: `Product met barcode ${ticketNumber}.${product_id} is al ontvangen. Het product is nu verkoopbaar.`
+        }
+      });
+    } else if (
+      results[0]["status"] === 2 ||
+      results[0]["status"] === 12 ||
+      results[0]["status"] === 22
+    ) {
+      res.send({
+        Sold: false,
+        error: {
+          title: "Product al verkocht",
+          message: `Product met barcode ${ticketNumber}.${product_id} is al verkocht. Controleer de barcode.`
+        }
+      });
+    } else {
+      const queryString =
+        "UPDATE products SET status = ? WHERE ticketnumber = ? AND product_id = ?";
 
-    res.send({ Received: true });
+      connection.query(
+        queryString,
+        [status, ticketNumber, product_id],
+        function(error, results, fields) {
+          if (error) throw error;
+
+          res.send({ Received: true });
+        }
+      );
+    }
   });
 });
 
@@ -48,7 +89,7 @@ router.post("/sell", function(req, res, next) {
   const index = req.body.index;
 
   const checkQueryString =
-    "SELECT EXISTS(SELECT status FROM products WHERE ticketnumber = ? AND product_id = ?)";
+    "SELECT status FROM products WHERE ticketnumber = ? AND product_id = ?";
 
   connection.query(checkQueryString, [ticketNumber, product_id], function(
     error,
@@ -56,8 +97,16 @@ router.post("/sell", function(req, res, next) {
     fields
   ) {
     if (error) throw error;
-    console.log(results[0]["status"]);
-    if (
+    if (results.length === 0) {
+      res.send({
+        Sold: false,
+        error: {
+          title: "Product niet gevonden",
+          message: `Product met barcode ${ticketNumber}.${product_id} niet gevonden. Controleer de barcode.`
+        },
+        index: index
+      });
+    } else if (
       results[0]["status"] === 2 ||
       results[0]["status"] === 12 ||
       results[0]["status"] === 22
@@ -98,18 +147,7 @@ router.post("/sell", function(req, res, next) {
         fields
       ) {
         if (error) throw error;
-        if (results["affectedRows"] === 0) {
-          res.send({
-            Sold: false,
-            error: {
-              title: "Product niet gevonden",
-              message: `Product met barcode ${ticketNumber}.${product_id} niet gevonden. Controleer de barcode.`
-            },
-            index: index
-          });
-        } else {
-          res.send({ Sold: true });
-        }
+        res.send({ Sold: true });
       });
     }
   });

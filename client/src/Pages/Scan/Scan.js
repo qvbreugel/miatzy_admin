@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 //Ant Design
-import { Badge, Button, Descriptions, Typography } from "antd";
+import { Button, Descriptions, Typography } from "antd";
 import StaticInput from "./../../Components/StaticInput";
 import LoadingSpinner from "./../../Components/LoadingSpinner";
 const { Title } = Typography;
@@ -11,6 +11,12 @@ const Scan = () => {
   const [fetching, setFetching] = useState(false);
   const [isScanned, setIsScanned] = useState(false);
   const [scannedProduct, setScannedProduct] = useState({});
+  const [isSold, setIsSold] = useState({});
+
+  let scannedProductInfo;
+  let scannedSoldProductInfo;
+  let productStatus = "";
+  let productType = "";
 
   const handleSubmit = event => {
     event.preventDefault();
@@ -41,13 +47,7 @@ const Scan = () => {
       });
   };
 
-  let scannedProductInfo;
-
   if (isScanned) {
-    console.log(scannedProduct);
-    let productType = "";
-    let productStatus = "";
-
     if (scannedProduct["status"] < 10) {
       productType = "Product";
       switch (scannedProduct["status"]) {
@@ -100,6 +100,30 @@ const Scan = () => {
           break;
       }
     }
+
+    scannedSoldProductInfo = (
+      <Descriptions title="Product" bordered>
+        <Descriptions.Item label="Naam" span={1}>
+          {scannedProduct["name"]}
+        </Descriptions.Item>
+        <Descriptions.Item label="Prijs" span={1}>
+          {scannedProduct["price"]}
+        </Descriptions.Item>
+
+        <Descriptions.Item label="Soort">{productType}</Descriptions.Item>
+        <Descriptions.Item label="Status">{productStatus}</Descriptions.Item>
+        <Descriptions.Item label="Categorie">
+          {scannedProduct["category"]}
+        </Descriptions.Item>
+        <Descriptions.Item label="Verkoopdatum">
+          {scannedProduct["date"].split("T")[0]}
+        </Descriptions.Item>
+        <Descriptions.Item label="Verkooptijd">
+          {scannedProduct["time"]}
+        </Descriptions.Item>
+      </Descriptions>
+    );
+
     scannedProductInfo = (
       <Descriptions title="Product" bordered>
         <Descriptions.Item label="Naam" span={1}>
@@ -110,17 +134,9 @@ const Scan = () => {
         </Descriptions.Item>
 
         <Descriptions.Item label="Soort">{productType}</Descriptions.Item>
-        <Descriptions.Item label="Status">
-          <Badge status="processing" text={productStatus} />
-        </Descriptions.Item>
+        <Descriptions.Item label="Status">{productStatus}</Descriptions.Item>
         <Descriptions.Item label="Categorie">
           {scannedProduct["category"]}
-        </Descriptions.Item>
-        <Descriptions.Item label="Verkoopdatum">
-          {scannedProduct["date"]}
-        </Descriptions.Item>
-        <Descriptions.Item label="Verkooptijd">
-          {scannedProduct["time"]}
         </Descriptions.Item>
       </Descriptions>
     );
@@ -129,17 +145,32 @@ const Scan = () => {
   const onChange = event => {
     setItem(event.target.value);
   };
+
+  const keyPressHandler = event => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleSubmit(event);
+    }
+  };
+
   return (
     <div className="Window">
       <Title className="window-title">Scan Product</Title>
-      <form method="POST">
-        <StaticInput onChange={onChange} value={item} name="item" />
+      <form method="POST" onSubmit={handleSubmit}>
+        <StaticInput
+          onChange={onChange}
+          value={item}
+          name="item"
+          onKeyPress={keyPressHandler}
+        />
         <Button className="window-button" type="primary" onClick={handleSubmit}>
           Product Bekijken
         </Button>
       </form>
       {fetching ? <LoadingSpinner /> : ""}
-      {scannedProductInfo}
+      {productStatus === "Verkocht"
+        ? scannedSoldProductInfo
+        : scannedProductInfo}
     </div>
   );
 };

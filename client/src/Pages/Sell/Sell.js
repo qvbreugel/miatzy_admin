@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from "react";
 
+//Components
 import DynamicInputs from "../../Components/DynamicInputs";
+import LoadingSpinner from "../../Components/LoadingSpinner";
+import ActionComplete from "../../Components/ActionComplete";
 
 //Ant Design
 import { Alert, Button, Typography } from "antd";
-import LoadingSpinner from "../../Components/LoadingSpinner";
-import ActionComplete from "../../Components/ActionComplete";
 const { Title } = Typography;
 
 const Sell = () => {
+  //State Management
   const [items, setItems] = useState([""]);
   const [fetching, setFetching] = useState(false);
   const [sold, setSold] = useState(false);
   const [errors, setErrors] = useState([]);
 
+  //Variables
   let noDuplicateEntries = true;
 
+  //Clear sold items for re-render
   useEffect(() => {
     setItems([""]);
   }, [sold]);
@@ -86,7 +90,6 @@ const Sell = () => {
                 errorCounter++;
               }
               if (counter === inputs.length) {
-                console.log(errors.length);
                 if (errors.length > 0) {
                   setErrors([]);
                 }
@@ -142,7 +145,7 @@ const Sell = () => {
   let producten = "Product";
 
   if (items.length > 1) {
-    producten = "Producten  ";
+    producten = "Producten";
   }
 
   let content = (
