@@ -6,7 +6,8 @@ import LoadingSpinner from "../../Components/LoadingSpinner";
 import ActionComplete from "../../Components/ActionComplete";
 
 //Ant Design
-import { Alert, Button, Typography } from "antd";
+import { Alert, Button, Modal, Typography } from "antd";
+import SellButton from "../../Components/SellButton";
 const { Title } = Typography;
 
 const Sell = () => {
@@ -15,9 +16,13 @@ const Sell = () => {
   const [fetching, setFetching] = useState(false);
   const [sold, setSold] = useState(false);
   const [errors, setErrors] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [visible, setVisible] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
   //Variables
   let noDuplicateEntries = true;
+  let subTotal = 0.0;
 
   //Clear sold items for re-render
   useEffect(() => {
@@ -27,22 +32,7 @@ const Sell = () => {
   const handleSubmit = event => {
     event.preventDefault();
     setFetching(true);
-
-    for (let i = items.length - 2; i >= 0; i--) {
-      if (items[items.length - 1] === items[i]) {
-        setErrors([
-          ...errors,
-          {
-            title: "Product al gescand",
-            message: `Product met barcode ${
-              items[items.length - 1]
-            } is al gescand. Scan een ander product of haal de invoer weg.`
-          }
-        ]);
-        noDuplicateEntries = false;
-        setFetching(false);
-      }
-    }
+    setConfirmLoading(true);
 
     if (noDuplicateEntries) {
       setErrors([]);
@@ -79,6 +69,8 @@ const Sell = () => {
             .then(function(data) {
               if (data["Sold"]) {
                 counter++;
+                subTotal += data["price"];
+                console.log(subTotal);
               } else if (!data["Sold"]) {
                 const errorTitle = data["error"]["title"];
                 const errorMessage = data["error"]["message"];
@@ -94,6 +86,8 @@ const Sell = () => {
                   setErrors([]);
                 }
                 setFetching(false);
+                setConfirmLoading(false);
+                setVisible(false);
                 setSold(true);
               } else if (counter + errorCounter === inputs.length) {
                 setErrors(QueryErrors);
@@ -142,11 +136,55 @@ const Sell = () => {
     setSold(false);
   };
 
-  let producten = "Product";
+  const handleCancel = () => {
+    setVisible(false);
+  };
 
-  if (items.length > 1) {
-    producten = "Producten";
-  }
+  const sellBagClickHandler = event => {
+    event.preventDefault();
+    setFetching(true);
+
+    fetch("/createbag", {
+      method: "GET",
+      headers: { "Content-Type": "application/json" }
+    })
+      .then(function(response) {
+        if (response.status >= 400) {
+          throw new Error("Bad response from server");
+        }
+        return response.json();
+      })
+      .then(function(data) {
+        if (data["created"]) {
+          let bagCode = `Miatzy.${data["product_id"]}`;
+          setItems([...items, bagCode]);
+          setFetching(false);
+        }
+      });
+  };
+
+  const payByCardClickHandler = event => {
+    event.preventDefault();
+    setFetching(true);
+
+    fetch("/createpaybycard", {
+      method: "GET",
+      headers: { "Content-Type": "application/json" }
+    })
+      .then(function(response) {
+        if (response.status >= 400) {
+          throw new Error("Bad response from server");
+        }
+        return response.json();
+      })
+      .then(function(data) {
+        if (data["created"]) {
+          let payByCardCode = `Miatzy.${data["product_id"]}`;
+          setItems([...items, payByCardCode]);
+          setFetching(false);
+        }
+      });
+  };
 
   let content = (
     <div>
@@ -157,10 +195,27 @@ const Sell = () => {
           onKeyPress={keyPressHandler}
           onInputChange={changeHandler}
         />
-        <Button className="window-button" type="primary" onClick={handleSubmit}>
-          {producten} Verkopen
-        </Button>
+        <SellButton
+          items={items}
+          setVisible={setVisible}
+          setFetching={setFetching}
+          setTotal={setTotal}
+          errors={errors}
+          setErrors={setErrors}
+        />
+        <Button onClick={sellBagClickHandler}>Tasje Toevoegen</Button>
+        <Button onClick={payByCardClickHandler}>Pinnen</Button>
       </form>
+      <Modal
+        title="Verkopen"
+        visible={visible}
+        onOk={handleSubmit}
+        confirmLoading={confirmLoading}
+        onCancel={handleCancel}
+      >
+        {total != 0 ? total : ""}
+        {fetching ? <LoadingSpinner /> : ""}
+      </Modal>
       {fetching ? <LoadingSpinner /> : ""}
       {errors.length
         ? errors.map((error, errorIndex) => {

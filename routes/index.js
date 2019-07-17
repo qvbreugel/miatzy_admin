@@ -15,72 +15,6 @@ function getConnection() {
   return pool;
 }
 
-/* GET home page. */
-router.post("/receive", function(req, res, next) {
-  const connection = getConnection();
-
-  const status = req.body.status;
-  const ticketNumber = req.body.ticketNumber;
-  const product_id = req.body.product_id;
-
-  const checkQueryString =
-    "SELECT status FROM products WHERE ticketnumber = ? AND product_id = ?";
-
-  connection.query(checkQueryString, [ticketNumber, product_id], function(
-    error,
-    results,
-    fields
-  ) {
-    if (error) throw error;
-    if (results.length === 0) {
-      res.send({
-        Received: false,
-        error: {
-          title: "Product niet gevonden",
-          message: `Product met barcode ${ticketNumber}.${product_id} niet gevonden. Controleer de barcode.`
-        }
-      });
-    } else if (
-      results[0]["status"] === 1 ||
-      results[0]["status"] === 11 ||
-      results[0]["status"] === 21
-    ) {
-      res.send({
-        Sold: false,
-        error: {
-          title: "Product al ontvangen",
-          message: `Product met barcode ${ticketNumber}.${product_id} is al ontvangen. Het product is nu verkoopbaar.`
-        }
-      });
-    } else if (
-      results[0]["status"] === 2 ||
-      results[0]["status"] === 12 ||
-      results[0]["status"] === 22
-    ) {
-      res.send({
-        Sold: false,
-        error: {
-          title: "Product al verkocht",
-          message: `Product met barcode ${ticketNumber}.${product_id} is al verkocht. Controleer de barcode.`
-        }
-      });
-    } else {
-      const queryString =
-        "UPDATE products SET status = ? WHERE ticketnumber = ? AND product_id = ?";
-
-      connection.query(
-        queryString,
-        [status, ticketNumber, product_id],
-        function(error, results, fields) {
-          if (error) throw error;
-
-          res.send({ Received: true });
-        }
-      );
-    }
-  });
-});
-
 router.post("/sell", function(req, res, next) {
   const connection = getConnection();
 
@@ -89,7 +23,7 @@ router.post("/sell", function(req, res, next) {
   const index = req.body.index;
 
   const checkQueryString =
-    "SELECT status FROM products WHERE ticketnumber = ? AND product_id = ?";
+    "SELECT status, price FROM products WHERE ticketnumber = ? AND product_id = ?";
 
   connection.query(checkQueryString, [ticketNumber, product_id], function(
     error,
@@ -97,6 +31,7 @@ router.post("/sell", function(req, res, next) {
     fields
   ) {
     if (error) throw error;
+    const price = results[0]["price"];
     if (results.length === 0) {
       res.send({
         Sold: false,
@@ -147,7 +82,7 @@ router.post("/sell", function(req, res, next) {
         fields
       ) {
         if (error) throw error;
-        res.send({ Sold: true });
+        res.send({ Sold: true, price: price });
       });
     }
   });
@@ -204,6 +139,98 @@ router.post("/scan_all", function(req, res, next) {
   ) {
     if (error) throw error;
     res.send(results[0]);
+  });
+});
+
+router.get("/createbag", function(req, res, next) {
+  const connection = getConnection();
+
+  const ticketNumber = "Miatzy";
+  const name = "Tasje";
+  const price = 0.5;
+  const category = "Tools";
+  const status = 1;
+  const placeHolderDate = "2050-01-01";
+  const placeHolderTime = "00:00:00";
+
+  let product_id = 0;
+
+  const checkQueryString =
+    "SELECT product_id FROM products WHERE ticketnumber = ? ORDER BY id DESC";
+
+  connection.query(checkQueryString, [ticketNumber, name], function(
+    error,
+    results,
+    fields
+  ) {
+    if (error) throw error;
+    product_id = results[0]["product_id"] + 1;
+
+    const QueryString = "INSERT INTO products VALUES (NULL, ?,?,?,?,?,?,?,?)";
+
+    connection.query(
+      QueryString,
+      [
+        ticketNumber,
+        product_id,
+        price,
+        name,
+        category,
+        status,
+        placeHolderDate,
+        placeHolderTime
+      ],
+      function(error, results, fields) {
+        if (error) throw error;
+        res.send({ created: true, product_id: product_id });
+      }
+    );
+  });
+});
+
+router.get("/createpaybycard", function(req, res, next) {
+  const connection = getConnection();
+
+  const ticketNumber = "Miatzy";
+  const name = "Pinkosten";
+  const price = 0.5;
+  const category = "Tools";
+  const status = 1;
+  const placeHolderDate = "2050-01-01";
+  const placeHolderTime = "00:00:00";
+
+  let product_id = 0;
+
+  const checkQueryString =
+    "SELECT product_id FROM products WHERE ticketnumber = ? ORDER BY id DESC";
+
+  connection.query(checkQueryString, [ticketNumber, name], function(
+    error,
+    results,
+    fields
+  ) {
+    if (error) throw error;
+    product_id = results[0]["product_id"] + 1;
+
+    const QueryString = "INSERT INTO products VALUES (NULL, ?,?,?,?,?,?,?,?)";
+
+    connection.query(
+      QueryString,
+      [
+        ticketNumber,
+        product_id,
+        price,
+        name,
+        category,
+        status,
+        placeHolderDate,
+        placeHolderTime
+      ],
+      function(error, results, fields) {
+        if (error) throw error;
+        res.send({ created: true, product_id: product_id });
+      }
+    );
   });
 });
 

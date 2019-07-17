@@ -12,9 +12,11 @@ const Navigation = props => {
         mode="inline"
       >
         <Menu.ItemGroup key="pr" title="Producten">
+          {/*
           <Menu.Item key="pr_all">Alle Producten</Menu.Item>
           <Menu.Item key="pr_rec">Ontvangen Producten</Menu.Item>
           <Menu.Item key="pr_sld">Verkochte Producten</Menu.Item>
+          */}
           <Menu.Item key="pr_scn">Scan Product</Menu.Item>
           <Menu.Item key="pr_prc">Prijs Aanpassen</Menu.Item>
         </Menu.ItemGroup>
