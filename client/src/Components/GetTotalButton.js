@@ -3,7 +3,8 @@ import React from "react";
 //Ant Design
 import { Button } from "antd";
 
-const SellButton = props => {
+const GetTotalButton = props => {
+  //Props Destructuring
   const { setFetching, setVisible, setTotal, setErrors, errors, items } = props;
 
   //Dynamic Rendering
@@ -73,9 +74,7 @@ const SellButton = props => {
                 const price = data["price"];
                 subTotal += price;
                 counter++;
-                setTotal(subTotal);
-                setFetching(false);
-              } else if (!data["Sold"]) {
+              } else if (!data["priceReceived"]) {
                 const errorTitle = data["error"]["title"];
                 const errorMessage = data["error"]["message"];
                 QueryErrors = [...QueryErrors, { title: "", message: "" }];
@@ -85,8 +84,23 @@ const SellButton = props => {
                 };
                 errorCounter++;
               }
+              if (counter === inputs.length) {
+                if (errors.length > 0) {
+                  setErrors([]);
+                }
+                setTotal(subTotal);
+                setVisible(true);
+                setFetching(false);
+              } else if (counter + errorCounter === inputs.length) {
+                setErrors(QueryErrors);
+                setFetching(false);
+              }
+            })
+            .catch(function(err) {
+              console.log(err);
             });
-          setVisible(true);
+        } else {
+          counter++;
         }
       }
     }
@@ -94,9 +108,9 @@ const SellButton = props => {
 
   return (
     <Button className="window-button" type="primary" onClick={showModal}>
-      {producten} Verkopen
+      Totaalbedrag
     </Button>
   );
 };
 
-export default SellButton;
+export default GetTotalButton;
