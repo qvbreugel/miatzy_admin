@@ -126,4 +126,26 @@ router.get("/createpaybycard", function(req, res, next) {
   });
 });
 
+router.post("/editprice", function(req, res, next) {
+  const connection = getConnection();
+
+  const ticketNumber = req.body.ticketNumber;
+  const product_id = req.body.product_id;
+  const newPrice = req.body.newPrice;
+
+  const queryString =
+    "UPDATE products SET price = ? WHERE ticketnumber = ? AND product_id = ?";
+
+  connection.query(queryString, [newPrice, ticketNumber, product_id], function(
+    error,
+    results,
+    fields
+  ) {
+    if (error) throw error;
+    else {
+      res.send({ priceEdited: true });
+    }
+  });
+});
+
 module.exports = router;

@@ -4,6 +4,7 @@ import Receive from "../Receive/Receive";
 import Sell from "../Sell/Sell";
 import Pay from "../Pay/Pay";
 import Scan from "../Scan/Scan";
+import EditPrice from "../EditPrice/EditPrice";
 
 //Pages
 
@@ -28,6 +29,9 @@ const Home = () => {
       break;
     case "pr_scn":
       activeWindow = <Scan />;
+      break;
+    case "pr_prc":
+      activeWindow = <EditPrice />;
       break;
     default:
       activeWindow = <Receive />;
