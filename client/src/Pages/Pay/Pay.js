@@ -1,93 +1,81 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 //Ant Design
-import { Button, Typography, Modal } from "antd";
+import { Alert, Typography } from "antd";
+
+//Components
 import StaticInput from "./../../Components/StaticInput";
+import PayModal from "../../Components/Modals/PayModal";
+import GetTotalToPayButton from "../../Components/Buttons/GetTotalToPayButton";
+import ActionComplete from "./../../Components/ActionComplete";
+import LoadingSpinner from "./../../Components/LoadingSpinner";
 const { Title } = Typography;
 
 const Pay = () => {
+  //State Management
   const [ticketNumber, setTicketNumber] = useState("");
   const [unsold, setUnsold] = useState([]);
   const [amountDue, setAmountDue] = useState(0);
+  const [visible, setVisible] = useState(false);
+  const [fetching, setFetching] = useState(false);
+  const [userPaid, setUserPaid] = useState(false);
+  const [error, setError] = useState("");
 
-  const showModal = () => {
-    Modal.info({
-      title: "Uitbetalen",
-      centered: true,
-      content: (
-        <div>
-          {console.log(unsold)}
-          {unsold.map(product => (
-            <div key={product.id}>
-              <h2>Results:</h2>
-              id: {product.product_id} name: {product.name}
-            </div>
-          ))}
-          <div>
-            <h2>Payment Due:</h2>
-            <h3>{amountDue}</h3>
-          </div>
-        </div>
-      ),
-      onOk() {}
-    });
-  };
-
-  const handleSubmit = event => {
-    event.preventDefault();
-    console.log(Date.now());
-
-    const currentTicketNumber = ticketNumber;
-
-    const data = {
-      currentTicketNumber
-    };
-
-    fetch("/pay", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    })
-      .then(function(response) {
-        if (response.status >= 400) {
-          throw new Error("Bad response from server");
-        }
-        return response.json();
-      })
-      .then(function(response) {
-        setUnsold(response["unSold"]);
-        const sold = response["Sold"];
-        let subtotal = 0;
-        for (let i = 0; i < sold.length; i++) {
-          subtotal += sold[i]["price"];
-        }
-        const total = subtotal * 0.9;
-        setAmountDue(total);
-      })
-      .catch(function(err) {
-        console.log(err);
-      });
-  };
+  useEffect(() => {
+    setTicketNumber("");
+  }, [userPaid]);
 
   const onChange = event => {
     setTicketNumber(event.target.value);
   };
 
-  return (
-    <div className="Window">
+  const clickHandler = () => {
+    setUserPaid(false);
+  };
+
+  let content = (
+    <div>
       <Title className="window-title">Uitbetalen</Title>
-      <form onSubmit={handleSubmit} method="POST">
+      <form method="POST">
         <StaticInput
           onChange={onChange}
           value={ticketNumber}
           name="ticketNumber"
         />
-        <Button className="window-button" type="primary" onClick={handleSubmit}>
-          Uitbetalen
-        </Button>
+        <GetTotalToPayButton
+          setFetching={setFetching}
+          setVisible={setVisible}
+          setAmountDue={setAmountDue}
+          setUnsold={setUnsold}
+          ticketNumber={ticketNumber}
+          setError={setError}
+        />
       </form>
+      <PayModal
+        visible={visible}
+        setVisible={setVisible}
+        unsold={unsold}
+        amountDue={amountDue}
+        ticketNumber={ticketNumber}
+        setUserPaid={setUserPaid}
+      />
+      {fetching ? <LoadingSpinner /> : ""}
+      {error ? <Alert message={error} type="error" showIcon /> : ""}
     </div>
   );
+
+  if (userPaid) {
+    content = (
+      <ActionComplete
+        title="De gebruiker is succesvol betaald"
+        subTitle="Overhandig het geld"
+        buttonText="Betaal nog een gebruiker"
+        onClick={clickHandler}
+      />
+    );
+  }
+
+  return <div className="Window">{content}</div>;
 };
 
 export default Pay;

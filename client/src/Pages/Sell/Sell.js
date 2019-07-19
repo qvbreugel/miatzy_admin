@@ -121,6 +121,7 @@ const Sell = () => {
       <ActionComplete
         title="Alle producten zijn succesvol verkocht!"
         subTitle="Neem het geld in ontvangst en overhandig de procuten."
+        buttonText="Verkoop meer producten"
         onClick={clickHandler}
       />
     );

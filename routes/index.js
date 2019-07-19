@@ -6,48 +6,14 @@ const pool = mysql.createPool({
   connectionLimit: 10,
   host: "localhost",
   user: "root",
-  port: 3306,
+  password: "root",
+  port: 8889,
   database: "miatzy"
 });
 
 function getConnection() {
   return pool;
 }
-
-router.post("/pay", function(req, res, next) {
-  const connection = getConnection();
-  let unSold = [];
-  let Sold = [];
-
-  const ticketNumber = req.body.ticketNumber;
-
-  const queryString =
-    "SELECT * FROM products WHERE ticketnumber = ? AND status = 1 OR 11 OR 21";
-
-  connection.query(queryString, [ticketNumber], function(
-    error,
-    results,
-    fields
-  ) {
-    if (error) throw error;
-    unSold = results;
-
-    const soldQueryString =
-      "SELECT * FROM products WHERE ticketnumber = ? AND status = 2 OR 12 OR 22";
-    connection.query(soldQueryString, [ticketNumber], function(
-      error,
-      results,
-      fields
-    ) {
-      if (error) throw error;
-      Sold = results;
-
-      const data = { unSold, Sold };
-      console.log(data);
-      res.send(data);
-    });
-  });
-});
 
 router.post("/scan_all", function(req, res, next) {
   const connection = getConnection();

@@ -107,7 +107,7 @@ const Scan = () => {
           {scannedProduct["name"]}
         </Descriptions.Item>
         <Descriptions.Item label="Prijs" span={1}>
-          {scannedProduct["price"]}
+          &euro;{scannedProduct["price"].toFixed(2)}
         </Descriptions.Item>
 
         <Descriptions.Item label="Soort">{productType}</Descriptions.Item>
@@ -130,7 +130,7 @@ const Scan = () => {
           {scannedProduct["name"]}
         </Descriptions.Item>
         <Descriptions.Item label="Prijs" span={1}>
-          {scannedProduct["price"]}
+          &euro;{scannedProduct["price"].toFixed(2)}
         </Descriptions.Item>
 
         <Descriptions.Item label="Soort">{productType}</Descriptions.Item>

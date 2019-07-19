@@ -10,7 +10,7 @@ const ActionComplete = props => {
       subTitle={props.subTitle}
       extra={[
         <Button type="primary" onClick={props.onClick} key="restart">
-          Verkoop meer producten
+          {props.buttonText}
         </Button>
       ]}
     />

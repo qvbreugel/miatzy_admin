@@ -191,6 +191,7 @@ const Receive = () => {
       <ActionComplete
         title="Alle producten zijn succesvol ontvangen!"
         subTitle="Neem de producten in en leg ze klaar voor de verkoop."
+        buttonText="Neem meer producten in ontvangst"
         onClick={clickHandler}
       />
     );
