@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var mysql = require("mysql");
+var moment = require("moment");
 
 const pool = mysql.createPool({
   connectionLimit: 10,
@@ -144,6 +145,51 @@ router.post("/editprice", function(req, res, next) {
     if (error) throw error;
     else {
       res.send({ priceEdited: true });
+    }
+  });
+});
+
+router.get("/earnings", function(req, res, next) {
+  const connection = getConnection();
+
+  const queryString =
+    "SELECT price FROM products WHERE status = 2 OR status = 12 OR status = 22";
+
+  connection.query(queryString, function(error, results, fields) {
+    if (error) throw error;
+    else {
+      res.send({ priceEdited: true, values: results });
+    }
+  });
+});
+
+router.get("/dates", function(req, res, next) {
+  const connection = getConnection();
+
+  const queryString = "SELECT DISTINCT date FROM products";
+
+  connection.query(queryString, function(error, results, fields) {
+    if (error) throw error;
+    else {
+      console.log(results);
+      res.send({ datesFetched: true, dates: results });
+    }
+  });
+});
+
+router.post("/datespecificearnings", function(req, res, next) {
+  const connection = getConnection();
+
+  const date = req.body.currentDate;
+  console.log();
+
+  const queryString = "SELECT * FROM products WHERE date = ?";
+
+  connection.query(queryString, [date], function(error, results, fields) {
+    if (error) throw error;
+    else {
+      console.log(results);
+      res.send({ valuesFetched: true, values: results });
     }
   });
 });

@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var mysql = require("mysql");
+var moment = require("moment");
 
 const pool = mysql.createPool({
   connectionLimit: 10,
@@ -92,11 +93,12 @@ router.post("/", function(req, res, next) {
 
   const ticketNumber = req.body.ticketNumber;
   const product_id = req.body.product_id;
+  const date = moment().format("YYYY-MM-DD");
 
   const queryString =
-    "UPDATE products SET status = status+1, date = CURRENT_DATE(), time = CURRENT_TIME() WHERE ticketnumber = ? AND product_id = ?";
+    "UPDATE products SET status = status+1, date = ?, time = CURRENT_TIME() WHERE ticketnumber = ? AND product_id = ?";
 
-  connection.query(queryString, [ticketNumber, product_id], function(
+  connection.query(queryString, [date, ticketNumber, product_id], function(
     error,
     results,
     fields

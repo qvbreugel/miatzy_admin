@@ -5,6 +5,7 @@ import Sell from "../Sell/Sell";
 import Pay from "../Pay/Pay";
 import Scan from "../Scan/Scan";
 import EditPrice from "../EditPrice/EditPrice";
+import Earnings from "../Earnings/Earnings";
 
 //Pages
 
@@ -32,6 +33,9 @@ const Home = () => {
       break;
     case "pr_prc":
       activeWindow = <EditPrice />;
+      break;
+    case "in_sls":
+      activeWindow = <Earnings />;
       break;
     default:
       activeWindow = <Receive />;
