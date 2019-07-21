@@ -46,6 +46,7 @@ const DynamicInputs = props => {
             onChange={props.onInputChange}
             onKeyPress={props.onKeyPress}
             autoFocus
+            autoComplete="off"
           />
           {props.receive ? receiveOptions : ""}
         </InputGroup>

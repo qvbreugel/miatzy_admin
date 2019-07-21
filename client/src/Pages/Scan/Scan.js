@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 
 //Ant Design
-import { Button, Descriptions, Typography } from "antd";
+import { Alert, Button, Descriptions, Typography } from "antd";
 import StaticInput from "./../../Components/StaticInput";
 import LoadingSpinner from "./../../Components/LoadingSpinner";
 const { Title } = Typography;
 
 const Scan = () => {
+  //State Management
   const [item, setItem] = useState("");
   const [fetching, setFetching] = useState(false);
   const [isScanned, setIsScanned] = useState(false);
   const [scannedProduct, setScannedProduct] = useState({});
-  const [isSold, setIsSold] = useState({});
+  const [error, setError] = useState("");
 
   let scannedProductInfo;
   let scannedSoldProductInfo;
@@ -24,27 +25,38 @@ const Scan = () => {
 
     const [ticketNumber, product_id] = item.split(".");
 
-    const data = {
-      ticketNumber,
-      product_id
-    };
+    if (product_id === undefined) {
+      setFetching(false);
+      setError("Product bevat geen product id, voeg het product id toe");
+    } else {
+      setError("");
+      const data = {
+        ticketNumber,
+        product_id
+      };
 
-    fetch("/scan_all", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    })
-      .then(function(response) {
-        if (response.status >= 400) {
-          throw new Error("Bad response from server");
-        }
-        return response.json();
+      fetch("/scan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
       })
-      .then(function(data) {
-        setScannedProduct(data);
-        setIsScanned(true);
-        setFetching(false);
-      });
+        .then(function(response) {
+          if (response.status >= 400) {
+            throw new Error("Bad response from server");
+          }
+          return response.json();
+        })
+        .then(function(data) {
+          if (data["productScanned"]) {
+            setScannedProduct(data["product"]);
+            setIsScanned(true);
+            setFetching(false);
+          } else if (!data["productScanned"]) {
+            setError(data["error"]);
+            setFetching(false);
+          }
+        });
+    }
   };
 
   if (isScanned) {
@@ -156,18 +168,20 @@ const Scan = () => {
   return (
     <div className="Window">
       <Title className="window-title">Scan Product</Title>
-      <form method="POST" onSubmit={handleSubmit}>
+      <form method="POST">
         <StaticInput
           onChange={onChange}
           value={item}
           name="item"
           onKeyPress={keyPressHandler}
+          autoFocus
         />
         <Button className="window-button" type="primary" onClick={handleSubmit}>
           Product Bekijken
         </Button>
       </form>
       {fetching ? <LoadingSpinner /> : ""}
+      {error ? <Alert message={error} type="error" showIcon /> : ""}
       {productStatus === "Verkocht"
         ? scannedSoldProductInfo
         : scannedProductInfo}

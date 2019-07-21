@@ -41,6 +41,7 @@ const Pay = () => {
           onChange={onChange}
           value={ticketNumber}
           name="ticketNumber"
+          autoFocus
         />
         <GetTotalToPayButton
           setFetching={setFetching}

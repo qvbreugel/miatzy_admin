@@ -13,10 +13,12 @@ const Earnings = () => {
   const [values, setValues] = useState([]);
   const [total, setTotal] = useState(0);
   const [fetching, setFetching] = useState(false);
+  const [allSelected, setAllSelected] = useState(false);
 
   let subTotal = 0;
 
   useEffect(() => {
+    setAllSelected(false);
     setFetching(true);
     fetch("/earnings", {
       method: "GET",
@@ -37,11 +39,15 @@ const Earnings = () => {
           setFetching(false);
         });
       });
-  }, []);
+  }, [allSelected]);
   return (
     <div className="Window">
       <Title className="window-title">Opbrengsten</Title>
-      <SelectDate setFetching={setFetching} setTotal={setTotal} />
+      <SelectDate
+        setFetching={setFetching}
+        setTotal={setTotal}
+        setAllSelected={setAllSelected}
+      />
       {fetching ? <LoadingSpinner /> : ""}
       {total > 0 ? <Currency>{total}</Currency> : ""}
     </div>

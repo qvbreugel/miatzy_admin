@@ -44,7 +44,11 @@ const Receive = () => {
       }
     }
 
-    if (noDuplicateEntries && !errors.length) {
+    if (errors.length) {
+      setFetching(false);
+    }
+
+    if (noDuplicateEntries) {
       setErrors([]);
       const inputs = [...items];
 
@@ -54,54 +58,65 @@ const Receive = () => {
 
       for (let i = 0; i < inputs.length; i++) {
         if (inputs[i]["barcode"] !== "") {
-          const pre = inputs[i]["barcode"].split(".");
-          const ticketNumber = pre[0];
-          const product_id = pre[1];
-          const status = inputs[i]["status"];
-          const data = {
-            ticketNumber,
-            product_id,
-            status
-          };
+          const [ticketNumber, product_id] = inputs[i]["barcode"].split(".");
 
-          fetch("/receive", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-          })
-            .then(function(response) {
-              if (response.status >= 400) {
-                throw new Error("Bad response from server");
+          if (product_id === undefined) {
+            setErrors([
+              ...errors,
+              {
+                message: `Product met barcode ${
+                  items[items.length - 1]["barcode"]
+                } bevat geen product id. Voeg het product id toe.`
               }
-              return response.json();
+            ]);
+            setFetching(false);
+          } else {
+            const status = inputs[i]["status"];
+            const data = {
+              ticketNumber,
+              product_id,
+              status
+            };
+
+            fetch("/receive", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data)
             })
-            .then(function(data) {
-              if (data["Received"]) {
-                counter++;
-              } else if (!data["Received"]) {
-                const errorTitle = data["error"]["title"];
-                const errorMessage = data["error"]["message"];
-                QueryErrors = [...QueryErrors, { title: "", message: "" }];
-                QueryErrors[errorCounter] = {
-                  title: errorTitle,
-                  message: errorMessage
-                };
-                errorCounter++;
-              }
-              if (counter === inputs.length) {
-                if (errors.length > 0) {
-                  setErrors([]);
+              .then(function(response) {
+                if (response.status >= 400) {
+                  throw new Error("Bad response from server");
                 }
-                setFetching(false);
-                setReceived(true);
-              } else if (counter + errorCounter === inputs.length) {
-                setErrors(QueryErrors);
-                setFetching(false);
-              }
-            })
-            .catch(function(err) {
-              console.log(err);
-            });
+                return response.json();
+              })
+              .then(function(data) {
+                if (data["Received"]) {
+                  counter++;
+                } else if (!data["Received"]) {
+                  const errorTitle = data["error"]["title"];
+                  const errorMessage = data["error"]["message"];
+                  QueryErrors = [...QueryErrors, { title: "", message: "" }];
+                  QueryErrors[errorCounter] = {
+                    title: errorTitle,
+                    message: errorMessage
+                  };
+                  errorCounter++;
+                }
+                if (counter === inputs.length) {
+                  if (errors.length > 0) {
+                    setErrors([]);
+                  }
+                  setFetching(false);
+                  setReceived(true);
+                } else if (counter + errorCounter === inputs.length) {
+                  setErrors(QueryErrors);
+                  setFetching(false);
+                }
+              })
+              .catch(function(err) {
+                console.log(err);
+              });
+          }
         } else {
           counter++;
         }
@@ -175,8 +190,7 @@ const Receive = () => {
             return (
               <Alert
                 key={errorIndex}
-                message={error["title"]}
-                description={error["message"]}
+                message={error["message"]}
                 type="error"
                 showIcon
               />

@@ -7,7 +7,7 @@ import EditPriceButton from "../../Components/Buttons/EditPriceButton";
 import ActionComplete from "../../Components/ActionComplete";
 
 //Ant Design
-import { Typography } from "antd";
+import { Alert, Typography } from "antd";
 const { Title } = Typography;
 
 const EditPrice = () => {
@@ -16,6 +16,7 @@ const EditPrice = () => {
   const [newPrice, setNewPrice] = useState("");
   const [fetching, setFetching] = useState(false);
   const [priceEdited, setPriceEdited] = useState(false);
+  const [error, setError] = useState("");
 
   //Clean up inputs on re-render
   useEffect(() => {
@@ -51,21 +52,26 @@ const EditPrice = () => {
           value={item}
           name="item"
           onKeyPress={keyPressHandler}
+          autoFocus={true}
+          placeHolder="Barcode"
         />
         <StaticInput
           onChange={onChange}
           value={newPrice}
           name="newPrice"
           onKeyPress={keyPressHandler}
+          placeHolder="Nieuwe Prijs"
         />
         <EditPriceButton
           item={item}
           newPrice={newPrice}
           setFetching={setFetching}
           setPriceEdited={setPriceEdited}
+          setError={setError}
         />
       </form>
       {fetching ? <LoadingSpinner /> : ""}
+      {error ? <Alert message={error} type="error" showIcon /> : ""}
     </div>
   );
 

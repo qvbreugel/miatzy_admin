@@ -7,7 +7,7 @@ const SelectDate = props => {
   const [loading, setLoading] = useState(false);
   const [dates, setDates] = useState([]);
 
-  const { setFetching, setTotal } = props;
+  const { setFetching, setTotal, setAllSelected } = props;
 
   useEffect(() => {
     setLoading(true);
@@ -31,6 +31,9 @@ const SelectDate = props => {
 
   const changeHandler = event => {
     setTotal(0);
+    if (event === "all") {
+      setAllSelected(true);
+    }
     setFetching(true);
 
     const currentDate = event;

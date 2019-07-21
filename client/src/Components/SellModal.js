@@ -31,9 +31,7 @@ const SellModal = props => {
 
     for (let i = 0; i < inputs.length; i++) {
       if (inputs[i] !== "") {
-        const pre = inputs[i].split(".");
-        const ticketNumber = pre[0];
-        const product_id = pre[1];
+        const [ticketNumber, product_id] = inputs[i].split(".");
         const data = {
           ticketNumber,
           product_id

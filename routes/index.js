@@ -16,7 +16,7 @@ function getConnection() {
   return pool;
 }
 
-router.post("/scan_all", function(req, res, next) {
+router.post("/scan", function(req, res, next) {
   const connection = getConnection();
 
   const ticketNumber = req.body.ticketNumber;
@@ -31,7 +31,18 @@ router.post("/scan_all", function(req, res, next) {
     fields
   ) {
     if (error) throw error;
-    res.send(results[0]);
+    //Store Query Length
+    const length = results.length;
+
+    //Check if product exists
+    if (length === 0) {
+      res.send({
+        productScanned: false,
+        error: `Product met barcode ${ticketNumber}.${product_id} niet gevonden. Controleer de barcode.`
+      });
+    } else {
+      res.send({ productScanned: true, product: results[0] });
+    }
   });
 });
 
@@ -134,17 +145,49 @@ router.post("/editprice", function(req, res, next) {
   const product_id = req.body.product_id;
   const newPrice = req.body.newPrice;
 
-  const queryString =
-    "UPDATE products SET price = ? WHERE ticketnumber = ? AND product_id = ?";
+  const queryCheck =
+    "SELECT status FROM products WHERE ticketnumber = ? AND product_id = ?";
 
-  connection.query(queryString, [newPrice, ticketNumber, product_id], function(
+  connection.query(queryCheck, [ticketNumber, product_id], function(
     error,
     results,
     fields
   ) {
     if (error) throw error;
-    else {
-      res.send({ priceEdited: true });
+    //Store Query Length
+    const length = results.length;
+    console.log(results[0]["status"]);
+
+    //Check if product exists
+    if (length === 0) {
+      res.send({
+        priceEdited: false,
+        error: "Product niet gevonden. Controleer de barcode."
+      });
+    } else if (
+      results[0]["status"] === 2 ||
+      results[0]["status"] === 12 ||
+      results[0]["status"] === 22
+    ) {
+      res.send({
+        priceEdited: false,
+        error:
+          "Product is al verkocht. De prijs van een verkocht product kan niet meer aangepast worden."
+      });
+    } else {
+      const queryString =
+        "UPDATE products SET price = ? WHERE ticketnumber = ? AND product_id = ?";
+
+      connection.query(
+        queryString,
+        [newPrice, ticketNumber, product_id],
+        function(error, results, fields) {
+          if (error) throw error;
+          else {
+            res.send({ priceEdited: true });
+          }
+        }
+      );
     }
   });
 });
@@ -166,13 +209,15 @@ router.get("/earnings", function(req, res, next) {
 router.get("/dates", function(req, res, next) {
   const connection = getConnection();
 
-  const queryString = "SELECT DISTINCT date FROM products";
+  const queryString = "SELECT DISTINCT date FROM products ORDER BY date DESC";
 
   connection.query(queryString, function(error, results, fields) {
     if (error) throw error;
     else {
-      console.log(results);
-      res.send({ datesFetched: true, dates: results });
+      const values = [...results];
+      values.shift();
+      console.log(values);
+      res.send({ datesFetched: true, dates: values });
     }
   });
 });
@@ -181,14 +226,12 @@ router.post("/datespecificearnings", function(req, res, next) {
   const connection = getConnection();
 
   const date = req.body.currentDate;
-  console.log();
 
   const queryString = "SELECT * FROM products WHERE date = ?";
 
   connection.query(queryString, [date], function(error, results, fields) {
     if (error) throw error;
     else {
-      console.log(results);
       res.send({ valuesFetched: true, values: results });
     }
   });

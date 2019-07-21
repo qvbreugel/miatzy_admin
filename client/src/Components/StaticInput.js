@@ -12,7 +12,9 @@ const StaticInput = props => {
         onChange={props.onChange}
         onKeyPress={props.onKeyPress}
         name={props.name}
-        autoFocus
+        autoFocus={props.autoFocus}
+        placeholder={props.placeHolder}
+        autoComplete="off"
       />
     </div>
   );

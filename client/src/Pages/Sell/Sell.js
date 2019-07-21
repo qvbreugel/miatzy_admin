@@ -9,7 +9,7 @@ import SellModal from "../../Components/SellModal";
 import AddItemButton from "../../Components/Buttons/AddItemButton";
 
 //Ant Design
-import { Alert, Button, Modal, Typography } from "antd";
+import { Alert, Typography } from "antd";
 
 const { Title } = Typography;
 
@@ -78,6 +78,7 @@ const Sell = () => {
           setTotal={setTotal}
           errors={errors}
           setErrors={setErrors}
+          noDuplicateEntries={noDuplicateEntries}
         />
         <AddItemButton
           setFetching={setFetching}
