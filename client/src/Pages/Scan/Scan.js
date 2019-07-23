@@ -23,7 +23,8 @@ const Scan = () => {
     event.preventDefault();
     setFetching(true);
 
-    const [ticketNumber, product_id] = item.split(".");
+    const [ticketNumber, unfilteredProduct_id] = item.split(".");
+    const [product_id] = unfilteredProduct_id.split(" ");
 
     if (product_id === undefined) {
       setFetching(false);

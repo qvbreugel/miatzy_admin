@@ -9,6 +9,8 @@ var receiveRouter = require("./routes/receive");
 var sellRouter = require("./routes/sell");
 var payRouter = require("./routes/pay");
 
+require("dotenv").config();
+
 var app = express();
 
 // view engine setup

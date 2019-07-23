@@ -2,14 +2,15 @@ var express = require("express");
 var router = express.Router();
 var mysql = require("mysql");
 var moment = require("moment");
+require("dotenv").config();
 
 const pool = mysql.createPool({
   connectionLimit: 10,
-  host: "localhost",
-  user: "root",
-  password: "root",
-  port: 8889,
-  database: "miatzy"
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME
 });
 
 function getConnection() {

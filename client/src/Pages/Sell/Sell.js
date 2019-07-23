@@ -34,21 +34,23 @@ const Sell = () => {
     if (event.key === "Enter") {
       event.preventDefault();
       setErrors([]);
-      for (let i = items.length - 2; i >= 0; i--) {
-        if (items[items.length - 1] === items[i]) {
-          setErrors([
-            ...errors,
-            {
-              title: "Product al gescand",
-              message: `Product met barcode ${
-                items[items.length - 1]
-              } is al gescand. Scan een ander product of haal de invoer weg.`
-            }
-          ]);
-          noDuplicateEntries = false;
+      if (items[items.length - 1] !== "") {
+        for (let i = items.length - 2; i >= 0; i--) {
+          if (items[items.length - 1] === items[i]) {
+            setErrors([
+              ...errors,
+              {
+                title: "Product al gescand",
+                message: `Product met barcode ${
+                  items[items.length - 1]
+                } is al gescand. Scan een ander product of haal de invoer weg.`
+              }
+            ]);
+            noDuplicateEntries = false;
+          }
         }
+        setItems([...items, ""]);
       }
-      setItems([...items, ""]);
     }
   };
 

@@ -52,9 +52,8 @@ const GetTotalButton = props => {
 
       for (let i = 0; i < inputs.length; i++) {
         if (inputs[i] !== "") {
-          const pre = inputs[i].split(".");
-          const ticketNumber = pre[0];
-          const product_id = pre[1];
+          const [ticketNumber, unfilteredProduct_id] = inputs[i].split(".");
+          const [product_id] = unfilteredProduct_id.split(" ");
           if (product_id === undefined) {
             setErrors([
               ...errors,

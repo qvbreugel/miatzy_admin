@@ -58,7 +58,10 @@ const Receive = () => {
 
       for (let i = 0; i < inputs.length; i++) {
         if (inputs[i]["barcode"] !== "") {
-          const [ticketNumber, product_id] = inputs[i]["barcode"].split(".");
+          const [ticketNumber, unfilteredProduct_id] = inputs[i][
+            "barcode"
+          ].split(".");
+          const [product_id] = unfilteredProduct_id.split(" ");
 
           if (product_id === undefined) {
             setErrors([
@@ -128,24 +131,29 @@ const Receive = () => {
     if (event.key === "Enter") {
       event.preventDefault();
       setErrors([]);
-      for (let i = items.length - 2; i >= 0; i--) {
-        console.log(items[items.length - 1]["barcode"]);
-        if (items[items.length - 1]["barcode"] === items[i]["barcode"]) {
-          setErrors([
-            ...errors,
-            {
-              title: "Product al gescand",
-              message: `Product met barcode ${
-                items[items.length - 1]["barcode"]
-              } is al gescand. Scan een ander product of haal de invoer weg.`
-            }
-          ]);
-          noDuplicateEntries = false;
+      if (items[items.length - 1]["barcode"] !== "") {
+        for (let i = items.length - 2; i >= 0; i--) {
+          console.log(items[items.length - 1]["barcode"]);
+          if (items[items.length - 1]["barcode"] === items[i]["barcode"]) {
+            setErrors([
+              ...errors,
+              {
+                title: "Product al gescand",
+                message: `Product met barcode ${
+                  items[items.length - 1]["barcode"]
+                } is al gescand. Scan een ander product of haal de invoer weg.`
+              }
+            ]);
+            noDuplicateEntries = false;
+          }
         }
+
+        setItems([...items, { barcode: "", status: 1 }]);
       }
-      setItems([...items, { barcode: "", status: 1 }]);
     }
   };
+
+  console.log(items);
 
   const inputChangeHandler = event => {
     let itemsCopy = [...items];

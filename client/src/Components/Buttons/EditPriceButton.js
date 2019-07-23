@@ -11,7 +11,8 @@ const EditPriceButton = props => {
     event.preventDefault();
     setFetching(true);
     setError("");
-    const [ticketNumber, product_id] = item.split(".");
+    const [ticketNumber, unfilteredProduct_id] = item.split(".");
+    const [product_id] = unfilteredProduct_id.split(" ");
 
     if (product_id === undefined) {
       setError("Product bevat geen product id. Voeg een product id toe.");
