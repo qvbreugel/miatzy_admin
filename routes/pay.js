@@ -23,7 +23,7 @@ router.post("/total", function(req, res, next) {
 
   const ticketNumber = req.body.currentTicketNumber;
 
-  const userQuery = "SELECT * FROM paidUSers WHERE ticketnumber = ?";
+  const userQuery = "SELECT * FROM paidUsers WHERE ticketnumber = ?";
   connection.query(userQuery, [ticketNumber], function(error, results, fields) {
     if (error) throw error;
     if (results.length) {
