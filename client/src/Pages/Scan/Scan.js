@@ -168,7 +168,7 @@ const Scan = () => {
 
   return (
     <div className="Window">
-      <Title className="window-title">Scan Product</Title>
+      <Title className="window-title">Product Opzoeken</Title>
       <form method="POST">
         <StaticInput
           onChange={onChange}
@@ -178,7 +178,7 @@ const Scan = () => {
           autoFocus
         />
         <Button className="window-button" type="primary" onClick={handleSubmit}>
-          Product Bekijken
+          Product opzoeken
         </Button>
       </form>
       {fetching ? <LoadingSpinner /> : ""}

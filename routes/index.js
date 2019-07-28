@@ -238,4 +238,17 @@ router.post("/datespecificearnings", function(req, res, next) {
   });
 });
 
+router.get("/allproducts", function(req, res, next) {
+  const connection = getConnection();
+
+  const queryString = "SELECT * FROM products";
+
+  connection.query(queryString, function(error, results, fields) {
+    if (error) throw error;
+    else {
+      res.send({ productsFetched: true, products: results });
+    }
+  });
+});
+
 module.exports = router;

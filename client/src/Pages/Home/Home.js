@@ -6,6 +6,7 @@ import Pay from "../Pay/Pay";
 import Scan from "../Scan/Scan";
 import EditPrice from "../EditPrice/EditPrice";
 import Earnings from "../Earnings/Earnings";
+import AllProducts from "../AllProducts/AllProducts";
 
 //Pages
 
@@ -33,6 +34,9 @@ const Home = () => {
       break;
     case "pr_prc":
       activeWindow = <EditPrice />;
+      break;
+    case "pr_all":
+      activeWindow = <AllProducts />;
       break;
     case "in_sls":
       activeWindow = <Earnings />;
