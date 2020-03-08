@@ -1,5 +1,6 @@
 var express = require("express");
 var router = express.Router();
+const mysql = require("mysql2");
 require("dotenv").config();
 var moment = require("moment");
 const connection = require("../config/connection");
@@ -238,5 +239,69 @@ router.get("/cardtotal", function(req, res, next) {
     res.send({ fetched: true, total: subTotal });
   });
 });
+
+router.get("/import", function(req, res, next) {
+  const onlineDatabase = mysql.createPool({
+    host: process.env.HEROKU_DB_HOST, // Host name for database connection:
+    user: process.env.HEROKU_DB_USER, // Database user:
+    password: process.env.HEROKU_DB_PW, // Password for the above database user:
+    database: process.env.HEROKU_DB_NAME // Database name:
+  });
+
+  const onlineQueryString =
+    "SELECT * FROM products ORDER BY ticketnumber, id ASC";
+
+  onlineDatabase.query(onlineQueryString, function(error, results, fields) {
+    if (error) throw error;
+    let product = [];
+    let currentTicketnumber = "";
+    let i = 1;
+    const status = 0;
+    const date = moment().format("YYYY-MM-DD");
+    const time = moment().format("h:mm:ss");
+    const queryString =
+      "INSERT INTO products (ticketnumber, product_id, price, name, category, origin, language, description, status, date, time)  VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+    results.map(result => {
+      if (result["ticketnumber"] !== currentTicketnumber) {
+        i = 1;
+        currentTicketnumber = result["ticketnumber"];
+      } else {
+        result.product_id = i;
+        product.push(
+          result["ticketnumber"],
+          i,
+          result["price"],
+          result["name"],
+          result["category"],
+          result["origin"],
+          result["language"],
+          result["description"],
+          status,
+          date,
+          time
+        );
+        connection.query(queryString, product, function(
+          error,
+          results,
+          fields
+        ) {
+          if (error) throw error;
+        });
+        i++;
+        product = [];
+      }
+    });
+    res.send({ text: "Yehaw!" });
+  });
+});
+
+/*const queryString = "INSERT INTO products VALUES ()";
+
+connection.query(queryString, function(error, results, fields) {
+  if (error) throw error;
+  else {
+    res.send({ databaseImported: true });
+  }
+});*/
 
 module.exports = router;

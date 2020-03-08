@@ -8,6 +8,7 @@ import EditPrice from "../EditPrice/EditPrice";
 import Earnings from "../Earnings/Earnings";
 import AllProducts from "../AllProducts/AllProducts";
 import CardTotal from "../CardTotal/CardTotal";
+import ImportProducts from "../ImportProducts/ImportProducts";
 
 //Pages
 
@@ -44,6 +45,9 @@ const Home = () => {
       break;
     case "in_cto":
       activeWindow = <CardTotal />;
+      break;
+    case "se_imp":
+      activeWindow = <ImportProducts />;
       break;
     default:
       activeWindow = <Receive />;

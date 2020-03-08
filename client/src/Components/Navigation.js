@@ -25,6 +25,9 @@ const Navigation = props => {
           <Menu.Item key="in_sls">Opbrengsten</Menu.Item>
           <Menu.Item key="in_cto">Totaal Gepind</Menu.Item>
         </Menu.ItemGroup>
+        <Menu.ItemGroup key="se" title="Instellingen">
+          <Menu.Item key="se_imp">Producten importeren</Menu.Item>
+        </Menu.ItemGroup>
         <Menu.Divider />
       </Menu>
     </div>
