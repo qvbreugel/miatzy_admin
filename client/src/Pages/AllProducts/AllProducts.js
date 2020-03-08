@@ -11,6 +11,33 @@ class AllProducts extends React.Component {
     loading: true
   };
 
+  statusToString = status => {
+    let statusString = "";
+
+    switch (status) {
+      case 0:
+        statusString = "Aangemaakt";
+        break;
+      case 10:
+        statusString = "Ingenomen";
+        break;
+      case 20:
+        statusString = "Verkocht (Contant)";
+        break;
+      case 30:
+        statusString = "Verkocht (Pinnen)";
+        break;
+      case 50:
+        statusString = "Geweigerd";
+        break;
+      default:
+        statusString = "Onbekend";
+        break;
+    }
+
+    return statusString;
+  };
+
   componentDidMount() {
     const context = this;
     fetch("/allproducts", {
@@ -34,7 +61,8 @@ class AllProducts extends React.Component {
                 product["product_id"]
               }`,
               name: product["name"],
-              category: product["category"]
+              category: product["category"],
+              status: context.statusToString(product["status"])
             });
           });
           context.setState({ data: products, loading: false });
@@ -119,22 +147,29 @@ class AllProducts extends React.Component {
         title: "Ticketnummer",
         dataIndex: "ticketnumber",
         key: "ticketnumber",
-        width: "30%",
+        width: "25%",
         ...this.getColumnSearchProps("ticketnumber", "ticketnummer")
       },
       {
         title: "Naam",
         dataIndex: "name",
         key: "name",
-        width: "30%",
+        width: "25%",
         ...this.getColumnSearchProps("name", "naam")
       },
       {
         title: "Categorie",
         dataIndex: "category",
         key: "category",
-        width: "30%",
+        width: "25%",
         ...this.getColumnSearchProps("category", "categorie")
+      },
+      {
+        title: "Status",
+        dataIndex: "status",
+        key: "status",
+        width: "25%",
+        ...this.getColumnSearchProps("status", "status")
       }
     ];
     return (

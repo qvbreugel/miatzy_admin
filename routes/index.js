@@ -1,25 +1,10 @@
 var express = require("express");
 var router = express.Router();
-var mysql = require("mysql");
-var moment = require("moment");
 require("dotenv").config();
-
-const pool = mysql.createPool({
-  connectionLimit: 10,
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  port: process.env.DB_PORT,
-  database: process.env.DB_NAME
-});
-
-function getConnection() {
-  return pool;
-}
+var moment = require("moment");
+const connection = require("../config/connection");
 
 router.post("/scan", function(req, res, next) {
-  const connection = getConnection();
-
   const ticketNumber = req.body.ticketNumber;
   const product_id = req.body.product_id;
 
@@ -48,13 +33,11 @@ router.post("/scan", function(req, res, next) {
 });
 
 router.get("/createbag", function(req, res, next) {
-  const connection = getConnection();
-
   const ticketNumber = "Miatzy";
   const name = "Tasje";
   const price = 0.5;
   const category = "Tools";
-  const status = 1;
+  const status = 10;
   const placeHolderDate = "2050-01-01";
   const placeHolderTime = "00:00:00";
 
@@ -94,13 +77,11 @@ router.get("/createbag", function(req, res, next) {
 });
 
 router.get("/createpaybycard", function(req, res, next) {
-  const connection = getConnection();
-
   const ticketNumber = "Miatzy";
   const name = "Pinkosten";
   const price = 0.5;
   const category = "Tools";
-  const status = 1;
+  const status = 10;
   const placeHolderDate = "2050-01-01";
   const placeHolderTime = "00:00:00";
 
@@ -140,8 +121,6 @@ router.get("/createpaybycard", function(req, res, next) {
 });
 
 router.post("/editprice", function(req, res, next) {
-  const connection = getConnection();
-
   const ticketNumber = req.body.ticketNumber;
   const product_id = req.body.product_id;
   const newPrice = req.body.newPrice;
@@ -165,11 +144,7 @@ router.post("/editprice", function(req, res, next) {
         priceEdited: false,
         error: "Product niet gevonden. Controleer de barcode."
       });
-    } else if (
-      results[0]["status"] === 2 ||
-      results[0]["status"] === 12 ||
-      results[0]["status"] === 22
-    ) {
+    } else if (results[0]["status"] === 20 || results[0]["status"] === 30) {
       res.send({
         priceEdited: false,
         error:
@@ -194,22 +169,19 @@ router.post("/editprice", function(req, res, next) {
 });
 
 router.get("/earnings", function(req, res, next) {
-  const connection = getConnection();
-
   const queryString =
-    "SELECT price FROM products WHERE status = 2 OR status = 12 OR status = 22";
+    "SELECT price, status FROM products WHERE status = 20 OR status = 30";
 
   connection.query(queryString, function(error, results, fields) {
     if (error) throw error;
     else {
+      console.log(results);
       res.send({ priceEdited: true, values: results });
     }
   });
 });
 
 router.get("/dates", function(req, res, next) {
-  const connection = getConnection();
-
   const queryString = "SELECT DISTINCT date FROM products ORDER BY date DESC";
 
   connection.query(queryString, function(error, results, fields) {
@@ -224,8 +196,6 @@ router.get("/dates", function(req, res, next) {
 });
 
 router.post("/datespecificearnings", function(req, res, next) {
-  const connection = getConnection();
-
   const date = req.body.currentDate;
 
   const queryString = "SELECT * FROM products WHERE date = ?";
@@ -239,8 +209,6 @@ router.post("/datespecificearnings", function(req, res, next) {
 });
 
 router.get("/allproducts", function(req, res, next) {
-  const connection = getConnection();
-
   const queryString = "SELECT * FROM products";
 
   connection.query(queryString, function(error, results, fields) {
@@ -248,6 +216,26 @@ router.get("/allproducts", function(req, res, next) {
     else {
       res.send({ productsFetched: true, products: results });
     }
+  });
+});
+
+router.get("/cardtotal", function(req, res, next) {
+  const status = 30;
+
+  const checkQueryString = "SELECT price FROM products WHERE status = ?";
+
+  connection.query(checkQueryString, [status], function(
+    error,
+    results,
+    fields
+  ) {
+    if (error) throw error;
+    let subTotal = 0;
+    results.forEach(result => {
+      subTotal += result["price"];
+    });
+
+    res.send({ fetched: true, total: subTotal });
   });
 });
 

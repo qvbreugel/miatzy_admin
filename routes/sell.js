@@ -1,26 +1,10 @@
 var express = require("express");
 var router = express.Router();
-var mysql = require("mysql");
 var moment = require("moment");
-require("dotenv").config();
-
-const pool = mysql.createPool({
-  connectionLimit: 10,
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  port: process.env.DB_PORT,
-  database: process.env.DB_NAME
-});
-
-function getConnection() {
-  return pool;
-}
+const connection = require("../config/connection");
 
 /* Total */
 router.post("/total", function(req, res, next) {
-  const connection = getConnection();
-
   const ticketNumber = req.body.ticketNumber;
   const product_id = req.body.product_id;
 
@@ -90,8 +74,6 @@ router.post("/total", function(req, res, next) {
 
 /* Sell */
 router.post("/", function(req, res, next) {
-  const connection = getConnection();
-
   const ticketNumber = req.body.ticketNumber;
   const product_id = req.body.product_id;
   const date = moment().format("YYYY-MM-DD");

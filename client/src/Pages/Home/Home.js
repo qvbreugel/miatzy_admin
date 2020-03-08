@@ -7,6 +7,7 @@ import Scan from "../Scan/Scan";
 import EditPrice from "../EditPrice/EditPrice";
 import Earnings from "../Earnings/Earnings";
 import AllProducts from "../AllProducts/AllProducts";
+import CardTotal from "../CardTotal/CardTotal";
 
 //Pages
 
@@ -40,6 +41,9 @@ const Home = () => {
       break;
     case "in_sls":
       activeWindow = <Earnings />;
+      break;
+    case "in_cto":
+      activeWindow = <CardTotal />;
       break;
     default:
       activeWindow = <Receive />;

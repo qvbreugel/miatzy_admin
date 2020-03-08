@@ -23,6 +23,7 @@ const Navigation = props => {
         </Menu.ItemGroup>
         <Menu.ItemGroup key="in" title="Inzichten">
           <Menu.Item key="in_sls">Opbrengsten</Menu.Item>
+          <Menu.Item key="in_cto">Totaal Gepind</Menu.Item>
         </Menu.ItemGroup>
         <Menu.Divider />
       </Menu>

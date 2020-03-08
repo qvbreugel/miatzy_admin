@@ -55,7 +55,7 @@ const SelectDate = props => {
       .then(function(data) {
         if (data["valuesFetched"]) {
           data["values"].forEach(value => {
-            subTotal += value["price"] * 0.9;
+            subTotal += value["price"] * 0.1;
             subTotal.toFixed(2);
             setTotal(subTotal);
             setFetching(false);

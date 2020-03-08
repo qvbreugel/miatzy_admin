@@ -1,23 +1,8 @@
 var express = require("express");
 var router = express.Router();
-var mysql = require("mysql");
-require("dotenv").config();
-
-const pool = mysql.createPool({
-  connectionLimit: 10,
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  port: process.env.DB_PORT,
-  database: process.env.DB_NAME
-});
-
-function getConnection() {
-  return pool;
-}
+const connection = require("../config/connection");
 
 router.post("/total", function(req, res, next) {
-  const connection = getConnection();
   let unSold = [];
   let Sold = [];
 
@@ -59,8 +44,6 @@ router.post("/total", function(req, res, next) {
 });
 
 router.post("/", function(req, res, next) {
-  const connection = getConnection();
-
   const ticketNumber = req.body.currentTicketNumber;
 
   const queryString =
