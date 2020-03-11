@@ -11,7 +11,7 @@ const { Title } = Typography;
 
 const Receive = () => {
   //State Management
-  const [items, setItems] = useState([{ barcode: "", status: 1 }]);
+  const [items, setItems] = useState([{ barcode: "", status: 10 }]);
   const [received, setReceived] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [errors, setErrors] = useState([]);
@@ -21,7 +21,7 @@ const Receive = () => {
 
   //Clear received items for re-render
   useEffect(() => {
-    setItems([{ barcode: "", status: 1 }]);
+    setItems([{ barcode: "", status: 10 }]);
   }, [received]);
 
   const handleSubmit = event => {
@@ -148,7 +148,7 @@ const Receive = () => {
           }
         }
 
-        setItems([...items, { barcode: "", status: 1 }]);
+        setItems([...items, { barcode: "", status: 10 }]);
       }
     }
   };

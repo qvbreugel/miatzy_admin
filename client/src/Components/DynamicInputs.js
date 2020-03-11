@@ -12,11 +12,11 @@ const DynamicInputs = props => {
 
     let receiveOptions = (
       <Select
-        defaultValue="01"
+        defaultValue="10"
         onChange={props.onSelectChange}
         style={{ width: "15%", textAlign: "center" }}
       >
-        <Option value="01" id={index}>
+        <Option value="10" id={index}>
           Geen bijzonderheden
         </Option>
         <Option value="11" id={index}>
@@ -25,7 +25,7 @@ const DynamicInputs = props => {
         <Option value="21" id={index}>
           Donatie
         </Option>
-        <Option value="03" id={index}>
+        <Option value="50" id={index}>
           Ongeschikt
         </Option>
       </Select>

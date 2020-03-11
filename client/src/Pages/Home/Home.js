@@ -9,6 +9,7 @@ import Earnings from "../Earnings/Earnings";
 import AllProducts from "../AllProducts/AllProducts";
 import CardTotal from "../CardTotal/CardTotal";
 import ImportProducts from "../ImportProducts/ImportProducts";
+import SortByOrigin from "../SortByOrigin/SortByOrigin";
 
 //Pages
 
@@ -39,6 +40,9 @@ const Home = () => {
       break;
     case "pr_all":
       activeWindow = <AllProducts />;
+      break;
+    case "pr_sor":
+      activeWindow = <SortByOrigin />;
       break;
     case "in_sls":
       activeWindow = <Earnings />;

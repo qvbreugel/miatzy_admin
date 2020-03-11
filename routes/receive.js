@@ -25,11 +25,7 @@ router.post("/", function(req, res, next) {
           message: `Product met barcode ${ticketNumber}.${product_id} niet gevonden. Controleer de barcode.`
         }
       });
-    } else if (
-      results[0]["status"] === 1 ||
-      results[0]["status"] === 11 ||
-      results[0]["status"] === 21
-    ) {
+    } else if (results[0]["status"] === 10 || results[0]["status"] === 50) {
       res.send({
         Sold: false,
         error: {
@@ -37,11 +33,7 @@ router.post("/", function(req, res, next) {
           message: `Product met barcode ${ticketNumber}.${product_id} is al ontvangen. Het product is nu verkoopbaar.`
         }
       });
-    } else if (
-      results[0]["status"] === 2 ||
-      results[0]["status"] === 12 ||
-      results[0]["status"] === 22
-    ) {
+    } else if (results[0]["status"] === 20 || results[0]["status"] === 30) {
       res.send({
         Sold: false,
         error: {

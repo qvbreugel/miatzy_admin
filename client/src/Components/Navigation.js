@@ -13,6 +13,7 @@ const Navigation = props => {
       >
         <Menu.ItemGroup key="pr" title="Producten">
           <Menu.Item key="pr_all">Alle Producten</Menu.Item>
+          <Menu.Item key="pr_sor">Producten per serie</Menu.Item>
           <Menu.Item key="pr_scn">Product Opzoeken</Menu.Item>
           <Menu.Item key="pr_prc">Prijs Aanpassen</Menu.Item>
         </Menu.ItemGroup>

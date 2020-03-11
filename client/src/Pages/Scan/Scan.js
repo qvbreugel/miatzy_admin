@@ -176,6 +176,7 @@ const Scan = () => {
           name="item"
           onKeyPress={keyPressHandler}
           autoFocus
+          required
         />
         <Button className="window-button" type="primary" onClick={handleSubmit}>
           Product opzoeken

@@ -1,14 +1,19 @@
 import React from "react";
-import { Table, Input, Button, Icon, Typography } from "antd";
+import { Table, Input, Button, Icon, Typography, Select } from "antd";
 import Highlighter from "react-highlight-words";
+import axios from "axios";
 
 const { Title } = Typography;
+const { Option } = Select;
 
-class AllProducts extends React.Component {
+class SortByOrigin extends React.Component {
   state = {
     searchText: "",
+    origins: [],
+    selectedOrigin: "",
     data: [],
-    loading: true
+    loading: false,
+    dropDownLoading: true
   };
 
   statusToString = status => {
@@ -40,7 +45,29 @@ class AllProducts extends React.Component {
 
   componentDidMount() {
     const context = this;
-    fetch("/allproducts", {
+    fetch("/origins", {
+      method: "GET",
+      headers: { "Content-Type": "application/json" }
+    })
+      .then(function(response) {
+        if (response.status >= 400) {
+          throw new Error("Bad response from server");
+        }
+        return response.json();
+      })
+      .then(function(data) {
+        if (data["originsFetched"]) {
+          context.setState({
+            origins: data["origins"],
+            dropDownLoading: false
+          });
+        }
+      });
+  }
+
+  getProductsBySerie = () => {
+    const context = this;
+    fetch(`/productsbyserie/`, {
       method: "GET",
       headers: { "Content-Type": "application/json" }
     })
@@ -66,7 +93,28 @@ class AllProducts extends React.Component {
           context.setState({ data: products, loading: false });
         }
       });
-  }
+  };
+
+  handleChange = value => {
+    const context = this;
+    context.setState({ loading: true });
+    axios
+      .get("/productsbyserie", { params: { serie: value } })
+      .then(response => {
+        const products = [];
+        const oldProducts = [...response["data"]];
+        oldProducts.map(product => {
+          products.push({
+            key: product["id"],
+            ticketnumber: `${product["ticketnumber"]}.${product["product_id"]}`,
+            name: product["name"],
+            category: product["category"],
+            status: context.statusToString(product["status"])
+          });
+        });
+        context.setState({ data: products, loading: false });
+      });
+  };
 
   getColumnSearchProps = (dataIndex, name) => ({
     filterDropdown: ({
@@ -172,7 +220,22 @@ class AllProducts extends React.Component {
     ];
     return (
       <div className="Window">
-        <Title className="window-title">Alle Producten</Title>
+        <Title className="window-title">Producten per serie</Title>
+        <Select
+          style={{ width: 240 }}
+          loading={this.state.dropDownLoading}
+          onChange={this.handleChange}
+        >
+          {this.state.origins.map(origin => {
+            if (origin["origin"] !== "" && origin["origin"] !== null) {
+              return (
+                <Option value={origin["origin"]} key={origin["origin"]}>
+                  {origin["origin"]}
+                </Option>
+              );
+            }
+          })}
+        </Select>
         <Table
           columns={columns}
           dataSource={this.state.data}
@@ -183,4 +246,4 @@ class AllProducts extends React.Component {
   }
 }
 
-export default AllProducts;
+export default SortByOrigin;

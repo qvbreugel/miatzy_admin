@@ -210,12 +210,40 @@ router.post("/datespecificearnings", function(req, res, next) {
 });
 
 router.get("/allproducts", function(req, res, next) {
-  const queryString = "SELECT * FROM products";
+  const queryString =
+    "SELECT * FROM products ORDER BY ticketnumber, product_id ASC";
 
   connection.query(queryString, function(error, results, fields) {
     if (error) throw error;
     else {
       res.send({ productsFetched: true, products: results });
+    }
+  });
+});
+
+router.get("/origins", function(req, res, next) {
+  const queryString = "SELECT DISTINCT origin FROM products ";
+
+  connection.query(queryString, function(error, results, fields) {
+    if (error) throw error;
+    else {
+      res.send({ originsFetched: true, origins: results });
+    }
+  });
+});
+
+router.get("/productsbyserie", function(req, res, next) {
+  const queryString =
+    "SELECT * FROM products WHERE origin = ? ORDER BY ticketnumber, product_id ASC ";
+
+  connection.query(queryString, [req.query.serie], function(
+    error,
+    results,
+    fields
+  ) {
+    if (error) throw error;
+    else {
+      res.send(results);
     }
   });
 });
@@ -265,31 +293,26 @@ router.get("/import", function(req, res, next) {
       if (result["ticketnumber"] !== currentTicketnumber) {
         i = 1;
         currentTicketnumber = result["ticketnumber"];
-      } else {
-        result.product_id = i;
-        product.push(
-          result["ticketnumber"],
-          i,
-          result["price"],
-          result["name"],
-          result["category"],
-          result["origin"],
-          result["language"],
-          result["description"],
-          status,
-          date,
-          time
-        );
-        connection.query(queryString, product, function(
-          error,
-          results,
-          fields
-        ) {
-          if (error) throw error;
-        });
-        i++;
-        product = [];
       }
+      result.product_id = i;
+      product.push(
+        result["ticketnumber"],
+        i,
+        result["price"],
+        result["name"],
+        result["category"],
+        result["origin"],
+        result["language"],
+        result["description"],
+        status,
+        date,
+        time
+      );
+      connection.query(queryString, product, function(error, results, fields) {
+        if (error) throw error;
+      });
+      i++;
+      product = [];
     });
     res.send({ text: "Yehaw!" });
   });
