@@ -42,7 +42,7 @@ router.get("/createbag", function(req, res, next) {
   const placeHolderDate = "2050-01-01";
   const placeHolderTime = "00:00:00";
 
-  let product_id = 0;
+  let product_id = 1;
 
   const checkQueryString =
     "SELECT product_id FROM products WHERE ticketnumber = ? ORDER BY id DESC";
@@ -53,9 +53,12 @@ router.get("/createbag", function(req, res, next) {
     fields
   ) {
     if (error) throw error;
-    product_id = results[0]["product_id"] + 1;
+    if (results[0] != undefined) {
+      product_id = results[0]["product_id"] + 1;
+    }
 
-    const QueryString = "INSERT INTO products VALUES (NULL, ?,?,?,?,?,?,?,?)";
+    const QueryString =
+      "INSERT INTO products VALUES (NULL,?,?,?,?,?,NULL,NULL,NULL,?,?,?)";
 
     connection.query(
       QueryString,
@@ -82,11 +85,11 @@ router.get("/createpaybycard", function(req, res, next) {
   const name = "Pinkosten";
   const price = 0.5;
   const category = "Tools";
-  const status = 10;
+  const status = 50;
   const placeHolderDate = "2050-01-01";
   const placeHolderTime = "00:00:00";
 
-  let product_id = 0;
+  let product_id = 1;
 
   const checkQueryString =
     "SELECT product_id FROM products WHERE ticketnumber = ? ORDER BY id DESC";
@@ -97,9 +100,12 @@ router.get("/createpaybycard", function(req, res, next) {
     fields
   ) {
     if (error) throw error;
-    product_id = results[0]["product_id"] + 1;
+    if (results[0] != undefined) {
+      product_id = results[0]["product_id"] + 1;
+    }
 
-    const QueryString = "INSERT INTO products VALUES (NULL, ?,?,?,?,?,?,?,?)";
+    const QueryString =
+      "INSERT INTO products VALUES (NULL, ?,?,?,?,?,NULL,NULL,NULL,?,?,?)";
 
     connection.query(
       QueryString,
@@ -171,7 +177,7 @@ router.post("/editprice", function(req, res, next) {
 
 router.get("/earnings", function(req, res, next) {
   const queryString =
-    "SELECT price, status FROM products WHERE status = 20 OR status = 30";
+    "SELECT price, status, ticketnumber FROM products WHERE status = 20 OR status = 30";
 
   connection.query(queryString, function(error, results, fields) {
     if (error) throw error;

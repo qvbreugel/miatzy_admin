@@ -15,7 +15,7 @@ router.post("/total", function(req, res, next) {
       res.send({ error: "Gebruiker is al betaald" });
     } else {
       const queryString =
-        "SELECT * FROM products WHERE ticketnumber = ? AND (status = 1 OR status = 11 OR status = 21)";
+        "SELECT * FROM products WHERE ticketnumber = ? AND (status = 10)";
 
       connection.query(queryString, [ticketNumber], function(
         error,
@@ -26,7 +26,7 @@ router.post("/total", function(req, res, next) {
         unSold = results;
 
         const soldQueryString =
-          "SELECT * FROM products WHERE ticketnumber = ? AND (status = 2 OR status = 12 OR status = 22)";
+          "SELECT * FROM products WHERE ticketnumber = ? AND (status = 20 OR status = 30)";
         connection.query(soldQueryString, [ticketNumber], function(
           error,
           results,

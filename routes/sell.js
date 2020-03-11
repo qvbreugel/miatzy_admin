@@ -73,22 +73,42 @@ router.post("/total", function(req, res, next) {
 });
 
 /* Sell */
-router.post("/", function(req, res, next) {
+router.post("/cash", function(req, res, next) {
   const ticketNumber = req.body.ticketNumber;
   const product_id = req.body.product_id;
+  const status = 20;
   const date = moment().format("YYYY-MM-DD");
 
   const queryString =
-    "UPDATE products SET status = status+1, date = ?, time = CURRENT_TIME() WHERE ticketnumber = ? AND product_id = ?";
+    "UPDATE products SET status = ?, date = ?, time = CURRENT_TIME() WHERE ticketnumber = ? AND product_id = ?";
 
-  connection.query(queryString, [date, ticketNumber, product_id], function(
-    error,
-    results,
-    fields
-  ) {
-    if (error) throw error;
-    res.send({ Sold: true });
-  });
+  connection.query(
+    queryString,
+    [status, date, ticketNumber, product_id],
+    function(error, results, fields) {
+      if (error) throw error;
+      res.send({ Sold: true });
+    }
+  );
+});
+
+router.post("/card", function(req, res, next) {
+  const ticketNumber = req.body.ticketNumber;
+  const product_id = req.body.product_id;
+  const status = 30;
+  const date = moment().format("YYYY-MM-DD");
+
+  const queryString =
+    "UPDATE products SET status = ?, date = ?, time = CURRENT_TIME() WHERE ticketnumber = ? AND product_id = ?";
+
+  connection.query(
+    queryString,
+    [status, date, ticketNumber, product_id],
+    function(error, results, fields) {
+      if (error) throw error;
+      res.send({ Sold: true });
+    }
+  );
 });
 
 module.exports = router;

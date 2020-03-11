@@ -16,7 +16,7 @@ const AddItemButton = props => {
     text = "Tasje Toevoegen";
   } else if (type === "card") {
     route = "/createpaybycard";
-    text = "Pinnen";
+    text = "Pinkosten";
   }
 
   const ClickHandler = event => {

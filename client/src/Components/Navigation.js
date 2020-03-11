@@ -20,7 +20,7 @@ const Navigation = props => {
         <Menu.ItemGroup key="ac" title="Acties">
           <Menu.Item key="ac_rec">Ontvangen</Menu.Item>
           <Menu.Item key="ac_sll">Verkopen</Menu.Item>
-          <Menu.Item key="ac_pay">Betalen</Menu.Item>
+          <Menu.Item key="ac_pay">Uitbetalen</Menu.Item>
         </Menu.ItemGroup>
         <Menu.ItemGroup key="in" title="Inzichten">
           <Menu.Item key="in_sls">Opbrengsten</Menu.Item>
