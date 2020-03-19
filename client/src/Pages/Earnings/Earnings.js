@@ -9,14 +9,13 @@ import { Typography } from "antd";
 import SelectDate from "../../Components/SelectDate";
 const { Title } = Typography;
 
-let subCashInit = 0.0;
-let subCardInit = 0.0;
-
 const Earnings = () => {
-  const [values, setValues] = useState([]);
-  const [total, setTotal] = useState(0);
+  const [total, setTotal] = useState({ cashTotal: 0, cardTotal: 0, total: 0 });
   const [fetching, setFetching] = useState(false);
-  const [allSelected, setAllSelected] = useState(false);
+  const [selectTrigger, setSelectTrigger] = useState(false);
+
+  let subCashInit = 0.0;
+  let subCardInit = 0.0;
 
   const addToSub = value => {
     if (value["status"] === 20) {
@@ -35,9 +34,6 @@ const Earnings = () => {
   };
 
   useEffect(() => {
-    subCashInit = 0.0;
-    subCardInit = 0.0;
-    setAllSelected(false); //Create trigger
     setFetching(true);
     fetch("/earnings", {
       method: "GET",
@@ -50,15 +46,17 @@ const Earnings = () => {
         return response.json();
       })
       .then(function(data) {
-        setValues(data["values"]);
         data["values"].forEach(value => {
           addToSub(value);
         });
-        const subTotal = subCashInit + subCardInit;
-        setTotal(subTotal);
+        setTotal({
+          cashTotal: subCashInit,
+          cardTotal: subCardInit,
+          total: subCardInit + subCashInit
+        });
         setFetching(false);
       });
-  }, [allSelected]);
+  }, [selectTrigger]);
 
   return (
     <div className="Window">
@@ -66,12 +64,13 @@ const Earnings = () => {
       <SelectDate
         setFetching={setFetching}
         setTotal={setTotal}
-        setAllSelected={setAllSelected}
+        setSelectTrigger={setSelectTrigger}
+        selectTrigger={selectTrigger}
       />
-      <p>Cash: {subCashInit.toFixed(2)}</p>
-      <p>Card: {subCardInit.toFixed(2)}</p>
+      <p>Contant: {total.cashTotal.toFixed(2)}</p>
+      <p>Pin: {total.cardTotal.toFixed(2)}</p>
       {fetching ? <LoadingSpinner /> : ""}
-      {total > 0 ? <Currency>{total}</Currency> : ""}
+      {total.total > 0 ? <Currency>{total.total}</Currency> : ""}
     </div>
   );
 };

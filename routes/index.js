@@ -196,7 +196,6 @@ router.get("/dates", function(req, res, next) {
     else {
       const values = [...results];
       values.shift();
-      console.log(values);
       res.send({ datesFetched: true, dates: values });
     }
   });
@@ -321,6 +320,16 @@ router.get("/import", function(req, res, next) {
       product = [];
     });
     res.send({ text: "Yehaw!" });
+  });
+});
+
+router.get("/reset", function(req, res, next) {
+  const queryString = "DELETE FROM products";
+  connection.query(queryString, function(error, results, fields) {
+    if (error) throw error;
+    else {
+      res.send({ text: "Yehaw!" });
+    }
   });
 });
 

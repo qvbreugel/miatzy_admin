@@ -7,7 +7,26 @@ const SelectDate = props => {
   const [loading, setLoading] = useState(false);
   const [dates, setDates] = useState([]);
 
-  const { setFetching, setTotal, setAllSelected } = props;
+  let subCashInit = 0.0;
+  let subCardInit = 0.0;
+
+  const { setFetching, setTotal, setSelectTrigger, selectTrigger } = props;
+
+  const addToSub = value => {
+    if (value["status"] === 20) {
+      if (value["ticketnumber"] == "Miatzy") {
+        subCashInit += value["price"];
+      } else {
+        subCashInit += value["price"] * 0.1;
+      }
+    } else if (value["status"] === 30) {
+      if (value["ticketnumber"] == "Miatzy") {
+        subCashInit += value["price"];
+      } else {
+        subCardInit += value["price"] * 0.1;
+      }
+    }
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -30,16 +49,17 @@ const SelectDate = props => {
   }, []);
 
   const changeHandler = event => {
-    setTotal(0);
+    setTotal({ cardTotal: 0, cashTotal: 0, total: 0 });
     if (event === "all") {
-      setAllSelected(true);
+      setSelectTrigger(!selectTrigger);
     }
     setFetching(true);
 
+    subCashInit = 0.0;
+    subCardInit = 0.0;
+
     const currentDate = event;
     const data = { currentDate };
-
-    let subTotal = 0;
 
     fetch("/datespecificearnings", {
       method: "POST",
@@ -55,11 +75,14 @@ const SelectDate = props => {
       .then(function(data) {
         if (data["valuesFetched"]) {
           data["values"].forEach(value => {
-            subTotal += value["price"] * 0.1;
-            subTotal.toFixed(2);
-            setTotal(subTotal);
-            setFetching(false);
+            addToSub(value);
           });
+          setTotal({
+            cashTotal: subCashInit,
+            cardTotal: subCardInit,
+            total: subCardInit + subCashInit
+          });
+          setFetching(false);
         }
       });
   };
